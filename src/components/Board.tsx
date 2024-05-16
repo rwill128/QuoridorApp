@@ -83,10 +83,15 @@ const Board: React.FC = () => {
             onValueChange={value =>
               setWallOrientation(value ? 'vertical' : 'horizontal')
             }
+            disabled={availableWalls <= 0}
           />
           <Text>Vertical</Text>
         </View>
-        <Button title="Place Wall" onPress={() => setPlacingWall(true)} />
+        <Button
+          title="Place Wall"
+          onPress={() => setPlacingWall(true)}
+          disabled={availableWalls <= 0}
+        />
       </View>
     </View>
   );
