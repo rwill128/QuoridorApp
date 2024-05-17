@@ -96,7 +96,7 @@ const Board: React.FC = () => {
         <Piece
           position={playerTwoPiecePosition}
           isSelected={playerTwoSelected}
-          color={'red'}
+          color={'black'}
           onPress={handleCellPress}
         />
         {walls.map((wall, index) => (
