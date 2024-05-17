@@ -27,10 +27,7 @@ const Board: React.FC = () => {
   const [playerTwoIsAI, setPlayerTwoIsAI] = useState(false);
   const [walls, setWalls] = useState<
     {row: number; col: number; orientation: 'horizontal' | 'vertical', color: string}[]
-  >([
-    {row: 2, col: 2, orientation: 'horizontal', color: 'red'},
-    // Add other walls as needed
-  ]);
+  >([]);
   const [placingWall, setPlacingWall] = useState(false);
   const [wallOrientation, setWallOrientation] = useState<
     'horizontal' | 'vertical'
@@ -115,8 +112,22 @@ const Board: React.FC = () => {
     }
   }
 
+  function restartGame() {
+    setWalls([])
+    setPlayerOneTurn(true)
+    setPlayerTwoTurn(false)
+    setPlayerOnePiecePosition({row: 8, col: 4})
+    setPlayerTwoPiecePosition({row: 0, col: 4})
+    setPlayerOneAvailableWalls(10)
+    setPlayerTwoAvailableWalls(10)
+  }
+
   return (
     <View style={styles.container}>
+      <Button
+        title="New Game"
+        onPress={() => restartGame()}
+      />
       <Text>{playerTurnMessage}</Text>
       <View style={styles.board}>
         {grid}
@@ -140,6 +151,10 @@ const Board: React.FC = () => {
             color={wall.color}
           />
         ))}
+      </View>
+      <View>
+        <Text>Black's available walls: {playerTwoAvailableWalls}</Text>
+        <Text>Blue's available walls: {playerOneAvailableWalls}</Text>
       </View>
       <View style={styles.controls}>
         <Text>Orientation:</Text>

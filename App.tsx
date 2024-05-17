@@ -13,8 +13,8 @@ import Board from './src/components/Board';
 function App(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.gameContainer}>
-        <Board />
+      <View>
+        <Board/>
       </View>
     </SafeAreaView>
   );
