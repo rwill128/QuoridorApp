@@ -44,17 +44,13 @@ abstract class MCTS<T> {
       const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
       currentState = this.applyMove(currentState, randomMove);
     }
-    return this.getResult(currentState);
+    return this.getResult(currentState, node.depth);
   }
 
   backpropagation(node: TreeNode<T>, result: number): void {
     let currentNode: TreeNode<T> | null = node;
     while (currentNode !== null) {
-      if (currentNode.depth % 2 === 1) {
-        currentNode.update(0);
-      } else {
-        currentNode.update(result)
-      }
+      currentNode.update(result)
       currentNode = currentNode.parent;
     }
   }
@@ -75,7 +71,7 @@ abstract class MCTS<T> {
 
   abstract isTerminal(state: T): boolean;
 
-  abstract getResult(state: T): number;
+  abstract getResult(state: T, depth: number): number;
 }
 
 export { MCTS }

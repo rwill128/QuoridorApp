@@ -106,11 +106,19 @@ class GameLogic extends MCTS<GameState> {
     return false;
   }
 
-  getResult(state: GameState): number {
-    if (state.playerTwoRow >= 8) {
-      return 0;
-    } else if (state.playerOneRow <= 0) {
-      return 1;
+  getResult(state: GameState, depth: number): number {
+    if (depth % 2 === 0) {
+      if (state.playerTwoRow >= 8) {
+        return 0;
+      } else if (state.playerOneRow <= 0) {
+        return 1;
+      }
+    } else {
+      if (state.playerTwoRow >= 8) {
+        return 1;
+      } else if (state.playerOneRow <= 0) {
+        return 0;
+      }
     }
     return 0;
   }
