@@ -35,13 +35,23 @@ const Board: React.FC = () => {
   const [wallOrientation, setWallOrientation] = useState<
     'horizontal' | 'vertical'
   >('horizontal');
-  const [availableWalls, setAvailableWalls] = useState(10);
+  const [playerOneAvailableWalls, setPlayerOneAvailableWalls] = useState(10);
+  const [playerTwoAvailableWalls, setPlayerTwoAvailableWalls] = useState(10);
 
   const handleCellPress = (row: number, col: number) => {
-    if (placingWall && availableWalls > 0) {
+    if (placingWall && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))) {
       setWalls([...walls, {row, col, orientation: wallOrientation}]);
       setPlacingWall(false);
-      setAvailableWalls(availableWalls - 1);
+      if (playerOneTurn) {
+        setPlayerOneAvailableWalls(playerOneAvailableWalls - 1);
+        setPlayerOneTurn(false);
+        setPlayerTwoTurn(true);
+      }
+      if (playerTwoTurn) {
+        setPlayerTwoAvailableWalls(playerTwoAvailableWalls - 1);
+        setPlayerOneTurn(true);
+        setPlayerTwoTurn(false);
+      }
     } else {
       if (playerOneTurn) {
         if (playerOneSelected) {
@@ -128,14 +138,14 @@ const Board: React.FC = () => {
             onValueChange={value =>
               setWallOrientation(value ? 'vertical' : 'horizontal')
             }
-            disabled={availableWalls <= 0}
+            disabled={playerOneAvailableWalls <= 0}
           />
           <Text>Vertical</Text>
         </View>
         <Button
           title="Place Wall"
           onPress={() => setPlacingWall(true)}
-          disabled={availableWalls <= 0}
+          disabled={playerOneAvailableWalls <= 0}
         />
       </View>
     </View>
