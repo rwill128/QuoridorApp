@@ -12,8 +12,16 @@ import Wall from './Wall';
 import {canMoveTo} from './CanMoveTo';
 
 const Board: React.FC = () => {
-  const [piecePosition, setPiecePosition] = useState({row: 4, col: 4});
-  const [selected, setSelected] = useState(false);
+  const [playerOnePiecePosition, setPlayerOnePiecePosition] = useState({
+    row: 8,
+    col: 4,
+  });
+  const [playerTwoPiecePosition, setPlayerTwoPiecePosition] = useState({
+    row: 0,
+    col: 4,
+  });
+  const [playerOneSelected, setPlayerOneSelected] = useState(false);
+  const [playerTwoSelected, setPlayerTwoSelected] = useState(false);
   const [walls, setWalls] = useState<
     {row: number; col: number; orientation: 'horizontal' | 'vertical'}[]
   >([
@@ -31,14 +39,32 @@ const Board: React.FC = () => {
       setWalls([...walls, {row, col, orientation: wallOrientation}]);
       setPlacingWall(false);
       setAvailableWalls(availableWalls - 1);
-    } else if (selected) {
-      if (canMoveTo(row, col, piecePosition, walls)) {
-        setPiecePosition({row, col});
-      }
-      setSelected(false);
     } else {
-      if (piecePosition.row === row && piecePosition.col === col) {
-        setSelected(true);
+      if (playerOneSelected) {
+        if (canMoveTo(row, col, playerOnePiecePosition, walls)) {
+          setPlayerOnePiecePosition({row, col});
+        }
+        setPlayerOneSelected(false);
+      } else {
+        if (
+          playerOnePiecePosition.row === row &&
+          playerOnePiecePosition.col === col
+        ) {
+          setPlayerOneSelected(true);
+        }
+      }
+      if (playerTwoSelected) {
+        if (canMoveTo(row, col, playerTwoPiecePosition, walls)) {
+          setPlayerTwoPiecePosition({row, col});
+        }
+        setPlayerTwoSelected(false);
+      } else {
+        if (
+          playerTwoPiecePosition.row === row &&
+          playerTwoPiecePosition.col === col
+        ) {
+          setPlayerTwoSelected(true);
+        }
       }
     }
   };
@@ -62,8 +88,15 @@ const Board: React.FC = () => {
       <View style={styles.board}>
         {grid}
         <Piece
-          position={piecePosition}
-          isSelected={selected}
+          position={playerOnePiecePosition}
+          isSelected={playerOneSelected}
+          color={'blue'}
+          onPress={handleCellPress}
+        />
+        <Piece
+          position={playerTwoPiecePosition}
+          isSelected={playerTwoSelected}
+          color={'red'}
           onPress={handleCellPress}
         />
         {walls.map((wall, index) => (
