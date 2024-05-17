@@ -22,6 +22,7 @@ const Board: React.FC = () => {
   });
   const [playerOneSelected, setPlayerOneSelected] = useState(false);
   const [playerTwoSelected, setPlayerTwoSelected] = useState(false);
+  const [playerTwoIsAI, setPlayerTwoIsAI] = useState(false);
   const [walls, setWalls] = useState<
     {row: number; col: number; orientation: 'horizontal' | 'vertical'}[]
   >([
@@ -41,7 +42,7 @@ const Board: React.FC = () => {
       setAvailableWalls(availableWalls - 1);
     } else {
       if (playerOneSelected) {
-        if (canMoveTo(row, col, playerOnePiecePosition, walls)) {
+        if (canMoveTo(row, col, playerOnePiecePosition, playerTwoPiecePosition, walls)) {
           setPlayerOnePiecePosition({row, col});
         }
         setPlayerOneSelected(false);
@@ -54,7 +55,7 @@ const Board: React.FC = () => {
         }
       }
       if (playerTwoSelected) {
-        if (canMoveTo(row, col, playerTwoPiecePosition, walls)) {
+        if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
           setPlayerTwoPiecePosition({row, col});
         }
         setPlayerTwoSelected(false);

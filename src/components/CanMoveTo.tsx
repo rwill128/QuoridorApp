@@ -2,8 +2,13 @@ export const canMoveTo = (
   row: number,
   col: number,
   piecePosition: {row: number; col: number},
+  opponentPiecePosition: {row: number; col: number},
   walls: {row: number; col: number; orientation: String}[],
 ) => {
+  if (row === opponentPiecePosition.row && col === opponentPiecePosition.col) {
+    return false;
+  }
+
   if (
     (Math.abs(piecePosition.row - row) === 1 && piecePosition.col === col) ||
     (Math.abs(piecePosition.col - col) === 1 && piecePosition.row === row)
