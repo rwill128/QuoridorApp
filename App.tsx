@@ -8,7 +8,7 @@
 import React from 'react';
 import {SafeAreaView, StyleSheet, View} from 'react-native';
 
-import Board from './src/components/Board';
+import Board from './src/components/Board-backup';
 
 function App(): React.JSX.Element {
   return (
