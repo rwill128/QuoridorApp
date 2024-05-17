@@ -22,6 +22,8 @@ const Board: React.FC = () => {
   });
   const [playerOneSelected, setPlayerOneSelected] = useState(false);
   const [playerTwoSelected, setPlayerTwoSelected] = useState(false);
+  const [playerOneTurn, setPlayerOneTurn] = useState(true);
+  const [playerTwoTurn, setPlayerTwoTurn] = useState(false);
   const [playerTwoIsAI, setPlayerTwoIsAI] = useState(false);
   const [walls, setWalls] = useState<
     {row: number; col: number; orientation: 'horizontal' | 'vertical'}[]
@@ -41,30 +43,39 @@ const Board: React.FC = () => {
       setPlacingWall(false);
       setAvailableWalls(availableWalls - 1);
     } else {
-      if (playerOneSelected) {
-        if (canMoveTo(row, col, playerOnePiecePosition, playerTwoPiecePosition, walls)) {
-          setPlayerOnePiecePosition({row, col});
-        }
-        setPlayerOneSelected(false);
-      } else {
-        if (
-          playerOnePiecePosition.row === row &&
-          playerOnePiecePosition.col === col
-        ) {
-          setPlayerOneSelected(true);
+      if (playerOneTurn) {
+        if (playerOneSelected) {
+          if (canMoveTo(row, col, playerOnePiecePosition, playerTwoPiecePosition, walls)) {
+            setPlayerOnePiecePosition({row, col});
+            setPlayerOneTurn(false);
+            setPlayerTwoTurn(true);
+          }
+          setPlayerOneSelected(false);
+        } else {
+          if (
+            playerOnePiecePosition.row === row &&
+            playerOnePiecePosition.col === col
+          ) {
+            setPlayerOneSelected(true);
+          }
         }
       }
-      if (playerTwoSelected) {
-        if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
-          setPlayerTwoPiecePosition({row, col});
-        }
-        setPlayerTwoSelected(false);
-      } else {
-        if (
-          playerTwoPiecePosition.row === row &&
-          playerTwoPiecePosition.col === col
-        ) {
-          setPlayerTwoSelected(true);
+
+      if (playerTwoTurn) {
+        if (playerTwoSelected) {
+          if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
+            setPlayerTwoPiecePosition({row, col});
+            setPlayerOneTurn(true);
+            setPlayerTwoTurn(false);
+          }
+          setPlayerTwoSelected(false);
+        } else {
+          if (
+            playerTwoPiecePosition.row === row &&
+            playerTwoPiecePosition.col === col
+          ) {
+            setPlayerTwoSelected(true);
+          }
         }
       }
     }
