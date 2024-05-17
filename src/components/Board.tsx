@@ -26,9 +26,9 @@ const Board: React.FC = () => {
   const [playerTwoTurn, setPlayerTwoTurn] = useState(false);
   const [playerTwoIsAI, setPlayerTwoIsAI] = useState(false);
   const [walls, setWalls] = useState<
-    {row: number; col: number; orientation: 'horizontal' | 'vertical'}[]
+    {row: number; col: number; orientation: 'horizontal' | 'vertical', color: string}[]
   >([
-    {row: 2, col: 2, orientation: 'horizontal'},
+    {row: 2, col: 2, orientation: 'horizontal', color: 'red'},
     // Add other walls as needed
   ]);
   const [placingWall, setPlacingWall] = useState(false);
@@ -37,28 +37,39 @@ const Board: React.FC = () => {
   >('horizontal');
   const [playerOneAvailableWalls, setPlayerOneAvailableWalls] = useState(10);
   const [playerTwoAvailableWalls, setPlayerTwoAvailableWalls] = useState(10);
+  const [playerTurnMessage, setPlayerTurnMessage] = useState("Blue's Turn");
+
+  function setTurnToBlack() {
+    setPlayerTurnMessage("Black's Turn");
+    setPlayerOneTurn(false);
+    setPlayerTwoTurn(true);
+  }
+
+  function setTurnToBlue() {
+    setPlayerTurnMessage("Blue's Turn");
+    setPlayerOneTurn(true);
+    setPlayerTwoTurn(false);
+  }
 
   const handleCellPress = (row: number, col: number) => {
     if (placingWall && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))) {
-      setWalls([...walls, {row, col, orientation: wallOrientation}]);
+      const chosenColor = playerOneTurn ? 'red' : 'orange'
+      setWalls([...walls, {row, col, orientation: wallOrientation, color: chosenColor}]);
       setPlacingWall(false);
       if (playerOneTurn) {
         setPlayerOneAvailableWalls(playerOneAvailableWalls - 1);
-        setPlayerOneTurn(false);
-        setPlayerTwoTurn(true);
+        setTurnToBlack();
       }
       if (playerTwoTurn) {
         setPlayerTwoAvailableWalls(playerTwoAvailableWalls - 1);
-        setPlayerOneTurn(true);
-        setPlayerTwoTurn(false);
+        setTurnToBlue();
       }
     } else {
       if (playerOneTurn) {
         if (playerOneSelected) {
           if (canMoveTo(row, col, playerOnePiecePosition, playerTwoPiecePosition, walls)) {
             setPlayerOnePiecePosition({row, col});
-            setPlayerOneTurn(false);
-            setPlayerTwoTurn(true);
+            setTurnToBlack();
           }
           setPlayerOneSelected(false);
         } else {
@@ -75,8 +86,7 @@ const Board: React.FC = () => {
         if (playerTwoSelected) {
           if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
             setPlayerTwoPiecePosition({row, col});
-            setPlayerOneTurn(true);
-            setPlayerTwoTurn(false);
+            setTurnToBlue();
           }
           setPlayerTwoSelected(false);
         } else {
@@ -107,6 +117,7 @@ const Board: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <Text>{playerTurnMessage}</Text>
       <View style={styles.board}>
         {grid}
         <Piece
@@ -126,6 +137,7 @@ const Board: React.FC = () => {
             key={index}
             position={{row: wall.row, col: wall.col}}
             orientation={wall.orientation}
+            color={wall.color}
           />
         ))}
       </View>
