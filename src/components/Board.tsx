@@ -3,10 +3,10 @@ import {
   Button,
   StyleSheet,
   Switch,
-  Text,
+  Text, TouchableOpacity,
   TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+  View
+} from "react-native";
 import Piece from './Piece';
 import Wall from './Wall';
 import {canMoveTo} from './CanMoveTo';
@@ -116,6 +116,7 @@ const Board: React.FC = () => {
     setWalls([])
     setPlayerOneTurn(true)
     setPlayerTwoTurn(false)
+    setPlayerTurnMessage("Blue's Turn")
     setPlayerOnePiecePosition({row: 8, col: 4})
     setPlayerTwoPiecePosition({row: 0, col: 4})
     setPlayerOneAvailableWalls(10)
@@ -165,15 +166,21 @@ const Board: React.FC = () => {
             onValueChange={value =>
               setWallOrientation(value ? 'vertical' : 'horizontal')
             }
+            trackColor={{ false: '#ff8c00', true: '#ff8c00' }}
+            thumbColor={'#f4f3f4'}
             disabled={playerOneAvailableWalls <= 0}
           />
           <Text>Vertical</Text>
         </View>
-        <Button
-          title="Place Wall"
+        <TouchableOpacity
+          style={[
+            styles.button,
+            placingWall ? styles.buttonEmphasis : null,
+          ]}
           onPress={() => setPlacingWall(true)}
-          disabled={playerOneAvailableWalls <= 0}
-        />
+        >
+          <Text style={styles.buttonText}>Place Wall</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -204,7 +211,24 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  button: {
+    padding: 10,
     marginVertical: 10,
+    borderRadius: 5,
+    backgroundColor: '#007BFF',
+  },
+  buttonEmphasis: {
+    borderWidth: 2,
+    borderColor: 'yellow',
+    shadowColor: '#fff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
   },
 });
 
