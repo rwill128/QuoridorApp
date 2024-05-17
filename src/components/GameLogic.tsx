@@ -1,4 +1,3 @@
-// Define your game state type (example)
 type GameState = {
   board: boolean[][];
   playerOneRow: number;
@@ -8,14 +7,12 @@ type GameState = {
   playerTurn: number;
 };
 
-// Implement the game-specific logic
 class GameLogic extends MCTS<GameState> {
   constructor(initialState: GameState, uctK: number = 1.41) {
     super(initialState, uctK);
   }
 
   getPossibleMoves(state: GameState): GameState[] {
-    // Implement logic to generate possible game states from the given state
     const possibleMoves: GameState[] = [];
 
     if (state.playerTurn === 0) {
@@ -74,18 +71,14 @@ class GameLogic extends MCTS<GameState> {
   }
 
   statesEqual(state1: GameState, state2: GameState): boolean {
-    // Implement logic to compare two game states
     return JSON.stringify(state1) === JSON.stringify(state2);
   }
 
   applyMove(state: GameState, move: GameState): GameState {
-    // Implement logic to apply a move and return the new state
-    // ... apply move to newState
     return move;
   }
 
   isTerminal(state: GameState): boolean {
-    // Implement logic to check if the state is a terminal state
     if (state.playerTwoRow >= 8) {
       return true;
     }
@@ -96,7 +89,6 @@ class GameLogic extends MCTS<GameState> {
   }
 
   getResult(state: GameState): number {
-    // Implement logic to get the result of the game from a terminal state
     if (state.playerTurn === 0) {
       if (state.playerOneRow <= 0) {
         return 1;
