@@ -80,18 +80,30 @@ const Board: React.FC = () => {
       }
 
       if (playerTwoTurn) {
-        if (playerTwoSelected) {
-          if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
-            setPlayerTwoPiecePosition({row, col});
-            setTurnToBlue();
-          }
-          setPlayerTwoSelected(false);
+        if (playerTwoIsAI) {
+          // Initialize the game logic with an initial state
+          const initialState: GameState = {
+            board: [/* initial board state */],
+            playerTurn: 1, // Example
+            // other initial properties
+          };
+
+          const gameLogic = new GameLogic(initialState);
+          gameLogic.run(1000); // Run MCTS for 1000 iterations
         } else {
-          if (
-            playerTwoPiecePosition.row === row &&
-            playerTwoPiecePosition.col === col
-          ) {
-            setPlayerTwoSelected(true);
+          if (playerTwoSelected) {
+            if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
+              setPlayerTwoPiecePosition({row, col});
+              setTurnToBlue();
+            }
+            setPlayerTwoSelected(false);
+          } else {
+            if (
+              playerTwoPiecePosition.row === row &&
+              playerTwoPiecePosition.col === col
+            ) {
+              setPlayerTwoSelected(true);
+            }
           }
         }
       }
