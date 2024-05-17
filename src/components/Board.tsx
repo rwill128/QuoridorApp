@@ -94,14 +94,14 @@ const Board: React.FC = () => {
               [false, false, false, false, false, false, false, false, false],
               [false, false, false, false, false, false, false, false, false]],
             playerTurn: 0,
-            playerOneCol: playerOnePiecePosition.col,
-            playerOneRow: playerOnePiecePosition.row,
-            playerTwoCol: playerTwoPiecePosition.col,
-            playerTwoRow: playerTwoPiecePosition.row,
+            playerOneCol: 4,
+            playerOneRow: 7,
+            playerTwoCol: 4,
+            playerTwoRow: 1,
           };
 
           const gameLogic = new GameLogic(initialState);
-          gameLogic.run(3000); // Run MCTS for 1000 iterations
+          gameLogic.run(300); // Run MCTS for 1000 iterations
 
           console.log(gameLogic)
         } else {

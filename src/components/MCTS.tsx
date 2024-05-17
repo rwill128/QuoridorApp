@@ -50,7 +50,11 @@ abstract class MCTS<T> {
   backpropagation(node: TreeNode<T>, result: number): void {
     let currentNode: TreeNode<T> | null = node;
     while (currentNode !== null) {
-      currentNode.update(result);
+      if (currentNode.depth % 2 === 1) {
+        currentNode.update(0);
+      } else {
+        currentNode.update(result)
+      }
       currentNode = currentNode.parent;
     }
   }
