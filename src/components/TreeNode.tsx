@@ -38,3 +38,5 @@ class TreeNode<T> implements Node<T> {
   }
 }
 
+export { TreeNode }
+export type { Node }

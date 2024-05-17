@@ -1,3 +1,5 @@
+import { MCTS } from "./MCTS";
+
 type GameState = {
   board: boolean[][];
   playerOneRow: number;
@@ -17,53 +19,69 @@ class GameLogic extends MCTS<GameState> {
 
     if (state.playerTurn === 0) {
       if (state.playerOneRow <= 7 && !state.board[state.playerOneCol][state.playerOneRow + 1]) {
-        const newState = JSON.parse(JSON.stringify(state))
-        newState.playerOneRow += 1
-        newState.board[state.playerOneCol][state.playerOneRow] = true
-        possibleMoves.push(newState)
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.board[newState.playerOneCol][newState.playerOneRow] = false;
+        newState.playerOneRow += 1;
+        newState.board[newState.playerOneCol][newState.playerOneRow] = true;
+        newState.playerTurn = 1;
+        possibleMoves.push(newState);
       }
-      if (state.playerOneRow >= 0 && !state.board[state.playerOneCol][state.playerOneRow - 1]) {
-        const newState = JSON.parse(JSON.stringify(state))
-        newState.playerOneRow -= 1
-        newState.board[state.playerOneCol][state.playerOneRow] = true
-        possibleMoves.push(newState)
+      if (state.playerOneRow >= 1 && !state.board[state.playerOneCol][state.playerOneRow - 1]) {
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.board[newState.playerOneCol][newState.playerOneRow] = false;
+        newState.playerOneRow -= 1;
+        newState.board[newState.playerOneCol][newState.playerOneRow] = true;
+        newState.playerTurn = 1;
+        possibleMoves.push(newState);
       }
-      if (state.playerOneRow >= 7 && !state.board[state.playerOneCol + 1][state.playerOneRow]) {
-        const newState = JSON.parse(JSON.stringify(state))
-        newState.playerOneCol += 1
-        newState.board[state.playerOneCol + 1][state.playerOneRow] = true
-        possibleMoves.push(newState)
+      if (state.playerOneCol <= 7 && !state.board[state.playerOneCol + 1][state.playerOneRow]) {
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.board[newState.playerOneCol][newState.playerOneRow] = false;
+        newState.playerOneCol += 1;
+        newState.board[newState.playerOneCol][newState.playerOneRow] = true;
+        newState.playerTurn = 1;
+        possibleMoves.push(newState);
       }
-      if (state.playerOneCol >= 0 && !state.board[state.playerOneCol - 1][state.playerOneRow]) {
-        const newState = JSON.parse(JSON.stringify(state))
-        newState.playerOneCol -= 1
-        newState.board[state.playerOneCol - 1][state.playerOneRow] = true
-        possibleMoves.push(newState)
+      if (state.playerOneCol >= 1 && !state.board[state.playerOneCol - 1][state.playerOneRow]) {
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.board[newState.playerOneCol][newState.playerOneRow] = false;
+        newState.playerOneCol -= 1;
+        newState.board[newState.playerOneCol][newState.playerOneRow] = true;
+        newState.playerTurn = 1;
+        possibleMoves.push(newState);
       }
     } else if (state.playerTurn === 1) {
       if (state.playerTwoRow <= 7 && !state.board[state.playerTwoCol][state.playerTwoRow + 1]) {
-        const newState = JSON.parse(JSON.stringify(state))
-        newState.playerTwoRow += 1
-        newState.board[state.playerTwoCol][state.playerTwoRow] = true
-        possibleMoves.push(newState)
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.board[newState.playerTwoCol][newState.playerTwoRow] = false;
+        newState.playerTwoRow += 1;
+        newState.board[newState.playerTwoCol][newState.playerTwoRow] = true;
+        newState.playerTurn = 0;
+        possibleMoves.push(newState);
       }
-      if (state.playerTwoRow >= 0 && !state.board[state.playerTwoCol][state.playerTwoRow - 1]) {
-        const newState = JSON.parse(JSON.stringify(state))
-        newState.playerTwoRow -= 1
-        newState.board[state.playerTwoCol][state.playerTwoRow] = true
-        possibleMoves.push(newState)
+      if (state.playerTwoRow >= 1 && !state.board[state.playerTwoCol][state.playerTwoRow - 1]) {
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.board[newState.playerTwoCol][newState.playerTwoRow] = false;
+        newState.playerTwoRow -= 1;
+        newState.board[newState.playerTwoCol][newState.playerTwoRow] = true;
+        newState.playerTurn = 0;
+        possibleMoves.push(newState);
       }
-      if (state.playerTwoRow >= 7 && !state.board[state.playerTwoCol + 1][state.playerTwoRow]) {
-        const newState = JSON.parse(JSON.stringify(state))
-        newState.playerTwoCol += 1
-        newState.board[state.playerTwoCol + 1][state.playerTwoRow] = true
-        possibleMoves.push(newState)
+      if (state.playerTwoCol <= 7 && !state.board[state.playerTwoCol + 1][state.playerTwoRow]) {
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.board[newState.playerTwoCol][newState.playerTwoRow] = false;
+        newState.playerTwoCol += 1;
+        newState.board[newState.playerTwoCol][newState.playerTwoRow] = true;
+        newState.playerTurn = 0;
+        possibleMoves.push(newState);
       }
-      if (state.playerTwoCol >= 0 && !state.board[state.playerTwoCol - 1][state.playerTwoRow]) {
-        const newState = JSON.parse(JSON.stringify(state))
-        newState.playerTwoCol -= 1
-        newState.board[state.playerTwoCol - 1][state.playerTwoRow] = true
-        possibleMoves.push(newState)
+      if (state.playerTwoCol >= 1 && !state.board[state.playerTwoCol - 1][state.playerTwoRow]) {
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.board[newState.playerTwoCol][newState.playerTwoRow] = false;
+        newState.playerTwoCol -= 1;
+        newState.board[newState.playerTwoCol][newState.playerTwoRow] = true;
+        newState.playerTurn = 0;
+        possibleMoves.push(newState);
       }
     }
 
@@ -75,7 +93,7 @@ class GameLogic extends MCTS<GameState> {
   }
 
   applyMove(state: GameState, move: GameState): GameState {
-    return move;
+    return JSON.parse(JSON.stringify(move));
   }
 
   isTerminal(state: GameState): boolean {
@@ -89,19 +107,14 @@ class GameLogic extends MCTS<GameState> {
   }
 
   getResult(state: GameState): number {
-    if (state.playerTurn === 0) {
-      if (state.playerOneRow <= 0) {
-        return 1;
-      } else if (state.playerTwoRow >= 8) {
-        return -1;
-      }
-    } else if (state.playerTurn === 1) {
-      if (state.playerTwoRow >= 8) {
-        return 1;
-      } else if (state.playerOneRow <= 0) {
-        return -1;
-      }
+    if (state.playerTwoRow >= 8) {
+      return 0;
+    } else if (state.playerOneRow <= 0) {
+      return 1;
     }
     return 0;
   }
 }
+
+export { GameLogic };
+export type { GameState };

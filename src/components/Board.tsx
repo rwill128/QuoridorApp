@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from "react";
 import {
   Button,
   StyleSheet,
@@ -7,31 +7,32 @@ import {
   TouchableWithoutFeedback,
   View
 } from "react-native";
-import Piece from './Piece';
-import Wall from './Wall';
-import {canMoveTo} from './CanMoveTo';
+import Piece from "./Piece";
+import Wall from "./Wall";
+import { canMoveTo } from "./CanMoveTo";
+import { GameLogic, GameState } from "./GameLogic";
 
 const Board: React.FC = () => {
   const [playerOnePiecePosition, setPlayerOnePiecePosition] = useState({
     row: 8,
-    col: 4,
+    col: 4
   });
   const [playerTwoPiecePosition, setPlayerTwoPiecePosition] = useState({
     row: 0,
-    col: 4,
+    col: 4
   });
   const [playerOneSelected, setPlayerOneSelected] = useState(false);
   const [playerTwoSelected, setPlayerTwoSelected] = useState(false);
   const [playerOneTurn, setPlayerOneTurn] = useState(true);
   const [playerTwoTurn, setPlayerTwoTurn] = useState(false);
-  const [playerTwoIsAI, setPlayerTwoIsAI] = useState(false);
+  const [playerTwoIsAI, setPlayerTwoIsAI] = useState(true);
   const [walls, setWalls] = useState<
-    {row: number; col: number; orientation: 'horizontal' | 'vertical', color: string}[]
+    { row: number; col: number; orientation: "horizontal" | "vertical", color: string }[]
   >([]);
   const [placingWall, setPlacingWall] = useState(false);
   const [wallOrientation, setWallOrientation] = useState<
-    'horizontal' | 'vertical'
-  >('horizontal');
+    "horizontal" | "vertical"
+  >("horizontal");
   const [playerOneAvailableWalls, setPlayerOneAvailableWalls] = useState(10);
   const [playerTwoAvailableWalls, setPlayerTwoAvailableWalls] = useState(10);
   const [playerTurnMessage, setPlayerTurnMessage] = useState("Blue's Turn");
@@ -50,8 +51,8 @@ const Board: React.FC = () => {
 
   const handleCellPress = (row: number, col: number) => {
     if (placingWall && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))) {
-      const chosenColor = playerOneTurn ? 'red' : 'orange'
-      setWalls([...walls, {row, col, orientation: wallOrientation, color: chosenColor}]);
+      const chosenColor = playerOneTurn ? "red" : "orange";
+      setWalls([...walls, { row, col, orientation: wallOrientation, color: chosenColor }]);
       setPlacingWall(false);
       if (playerOneTurn) {
         setPlayerOneAvailableWalls(playerOneAvailableWalls - 1);
@@ -65,7 +66,7 @@ const Board: React.FC = () => {
       if (playerOneTurn) {
         if (playerOneSelected) {
           if (canMoveTo(row, col, playerOnePiecePosition, playerTwoPiecePosition, walls)) {
-            setPlayerOnePiecePosition({row, col});
+            setPlayerOnePiecePosition({ row, col });
             setTurnToBlack();
           }
           setPlayerOneSelected(false);
@@ -83,17 +84,30 @@ const Board: React.FC = () => {
         if (playerTwoIsAI) {
           // Initialize the game logic with an initial state
           const initialState: GameState = {
-            board: [/* initial board state */],
-            playerTurn: 1, // Example
-            // other initial properties
+            board: [[false, false, false, false, false, false, false, false, false],
+              [false, false, false, false, false, false, false, false, false],
+              [false, false, false, false, false, false, false, false, false],
+              [false, false, false, false, false, false, false, false, false],
+              [false, false, false, false, false, false, false, false, false],
+              [false, false, false, false, false, false, false, false, false],
+              [false, false, false, false, false, false, false, false, false],
+              [false, false, false, false, false, false, false, false, false],
+              [false, false, false, false, false, false, false, false, false]],
+            playerTurn: 0,
+            playerOneCol: playerOnePiecePosition.col,
+            playerOneRow: playerOnePiecePosition.row,
+            playerTwoCol: playerTwoPiecePosition.col,
+            playerTwoRow: playerTwoPiecePosition.row,
           };
 
           const gameLogic = new GameLogic(initialState);
-          gameLogic.run(1000); // Run MCTS for 1000 iterations
+          gameLogic.run(3000); // Run MCTS for 1000 iterations
+
+          console.log(gameLogic)
         } else {
           if (playerTwoSelected) {
             if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
-              setPlayerTwoPiecePosition({row, col});
+              setPlayerTwoPiecePosition({ row, col });
               setTurnToBlue();
             }
             setPlayerTwoSelected(false);
@@ -119,20 +133,20 @@ const Board: React.FC = () => {
           key={`${row}-${col}`}
           onPress={() => handleCellPress(row, col)}>
           <View style={styles.cell} />
-        </TouchableWithoutFeedback>,
+        </TouchableWithoutFeedback>
       );
     }
   }
 
   function restartGame() {
-    setWalls([])
-    setPlayerOneTurn(true)
-    setPlayerTwoTurn(false)
-    setPlayerTurnMessage("Blue's Turn")
-    setPlayerOnePiecePosition({row: 8, col: 4})
-    setPlayerTwoPiecePosition({row: 0, col: 4})
-    setPlayerOneAvailableWalls(10)
-    setPlayerTwoAvailableWalls(10)
+    setWalls([]);
+    setPlayerOneTurn(true);
+    setPlayerTwoTurn(false);
+    setPlayerTurnMessage("Blue's Turn");
+    setPlayerOnePiecePosition({ row: 8, col: 4 });
+    setPlayerTwoPiecePosition({ row: 0, col: 4 });
+    setPlayerOneAvailableWalls(10);
+    setPlayerTwoAvailableWalls(10);
   }
 
   return (
@@ -147,19 +161,19 @@ const Board: React.FC = () => {
         <Piece
           position={playerOnePiecePosition}
           isSelected={playerOneSelected}
-          color={'blue'}
+          color={"blue"}
           onPress={handleCellPress}
         />
         <Piece
           position={playerTwoPiecePosition}
           isSelected={playerTwoSelected}
-          color={'black'}
+          color={"black"}
           onPress={handleCellPress}
         />
         {walls.map((wall, index) => (
           <Wall
             key={index}
-            position={{row: wall.row, col: wall.col}}
+            position={{ row: wall.row, col: wall.col }}
             orientation={wall.orientation}
             color={wall.color}
           />
@@ -174,12 +188,12 @@ const Board: React.FC = () => {
         <View style={styles.switchContainer}>
           <Text>Horizontal</Text>
           <Switch
-            value={wallOrientation === 'vertical'}
+            value={wallOrientation === "vertical"}
             onValueChange={value =>
-              setWallOrientation(value ? 'vertical' : 'horizontal')
+              setWallOrientation(value ? "vertical" : "horizontal")
             }
-            trackColor={{ false: '#ff8c00', true: '#ff8c00' }}
-            thumbColor={'#f4f3f4'}
+            trackColor={{ false: "#ff8c00", true: "#ff8c00" }}
+            thumbColor={"#f4f3f4"}
             disabled={playerOneAvailableWalls <= 0}
           />
           <Text>Vertical</Text>
@@ -187,7 +201,7 @@ const Board: React.FC = () => {
         <TouchableOpacity
           style={[
             styles.button,
-            placingWall ? styles.buttonEmphasis : null,
+            placingWall ? styles.buttonEmphasis : null
           ]}
           onPress={() => setPlacingWall(true)}
         >
@@ -200,48 +214,48 @@ const Board: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: "center"
   },
   board: {
     width: 360,
     height: 360,
-    backgroundColor: '#eee',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    position: 'relative',
+    backgroundColor: "#eee",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    position: "relative"
   },
   cell: {
     width: 40,
     height: 40,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc"
   },
   controls: {
     marginTop: 20,
-    alignItems: 'center',
+    alignItems: "center"
   },
   switchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center"
   },
   button: {
     padding: 10,
     marginVertical: 10,
     borderRadius: 5,
-    backgroundColor: '#007BFF',
+    backgroundColor: "#007BFF"
   },
   buttonEmphasis: {
     borderWidth: 2,
-    borderColor: 'yellow',
-    shadowColor: '#fff',
+    borderColor: "yellow",
+    shadowColor: "#fff",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 10,
+    shadowRadius: 10
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-  },
+    color: "#fff",
+    textAlign: "center"
+  }
 });
 
 export default Board;

@@ -1,3 +1,5 @@
+import { TreeNode } from "./TreeNode";
+
 abstract class MCTS<T> {
   root: TreeNode<T>;
   uctK: number;
@@ -71,3 +73,5 @@ abstract class MCTS<T> {
 
   abstract getResult(state: T): number;
 }
+
+export { MCTS }
