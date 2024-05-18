@@ -51,7 +51,11 @@ abstract class MCTS<T> {
     let currentNode: TreeNode<T> | null = node;
     while (currentNode !== null) {
       currentNode.update(result)
-      currentNode = currentNode.parent;
+      if (currentNode.parent?.parent) {
+        currentNode = currentNode.parent?.parent;
+      } else {
+        currentNode = null;
+      }
     }
   }
 
@@ -59,6 +63,13 @@ abstract class MCTS<T> {
     return node.children.reduce((bestChild, child) => {
       const uctValue = (child.wins / child.visits) + this.uctK * Math.sqrt(Math.log(node.visits) / child.visits);
       return uctValue > (bestChild ? (bestChild.wins / bestChild.visits) + this.uctK * Math.sqrt(Math.log(node.visits) / bestChild.visits) : -Infinity) ? child : bestChild;
+    }, null as TreeNode<T> | null)!;
+  }
+
+  mostWins(node: TreeNode<T>): TreeNode<T> {
+    return node.children.reduce((bestChild, child) => {
+      const winRate = (child.wins) * child.visits;
+      return winRate > (bestChild ? (child.wins) : -Infinity) ? child : bestChild;
     }, null as TreeNode<T> | null)!;
   }
 

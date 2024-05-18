@@ -93,17 +93,25 @@ const Board: React.FC = () => {
               [false, false, false, false, false, false, false, false, false],
               [false, false, false, false, false, false, false, false, false],
               [false, false, false, false, false, false, false, false, false]],
-            playerTurn: 0,
-            playerOneCol: 4,
-            playerOneRow: 7,
-            playerTwoCol: 4,
-            playerTwoRow: 1,
+            playerTurn: 1,
+            playerOneCol: playerOnePiecePosition.col,
+            playerOneRow: playerOnePiecePosition.row,
+            playerTwoCol: playerTwoPiecePosition.col,
+            playerTwoRow: playerTwoPiecePosition.row,
           };
+          initialState.board[playerOnePiecePosition.col][playerOnePiecePosition.row] = true
+          initialState.board[playerTwoPiecePosition.col][playerTwoPiecePosition.row] = true
 
           const gameLogic = new GameLogic(initialState);
-          gameLogic.run(300); // Run MCTS for 1000 iterations
+          gameLogic.run(500); // Run MCTS for 1000 iterations
 
-          console.log(gameLogic)
+          const chosenMove = gameLogic.mostWins(gameLogic.root)
+
+          console.log(chosenMove)
+
+          setPlayerTwoPiecePosition({ row: chosenMove.state.playerTwoRow, col: chosenMove.state.playerTwoCol} )
+          setTurnToBlue();
+          setPlayerTwoSelected(false);
         } else {
           if (playerTwoSelected) {
             if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
