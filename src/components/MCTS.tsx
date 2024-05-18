@@ -1,10 +1,10 @@
-import { TreeNode } from "./TreeNode";
+import {TreeNode} from "./TreeNode";
 
 abstract class MCTS<T> {
   root: TreeNode<T>;
   uctK: number;
 
-  constructor(rootState: T, uctK: number = 1.41) {
+  constructor(rootState: T, uctK: number = 1.1) {
     this.root = new TreeNode(rootState);
     this.uctK = uctK;
   }
@@ -51,13 +51,11 @@ abstract class MCTS<T> {
     let currentNode: TreeNode<T> | null = node;
     while (currentNode !== null) {
       currentNode.update(result)
-      if (currentNode.parent) {
-        currentNode.parent.visits += 1
-      }
-      if (currentNode.parent?.parent) {
-        currentNode = currentNode.parent?.parent;
-      } else {
-        currentNode = null;
+      currentNode = currentNode.parent
+      if (result === 1) {
+        result = 0;
+      } else if (result === 0) {
+        result = 1;
       }
     }
   }
@@ -69,10 +67,9 @@ abstract class MCTS<T> {
     }, null as TreeNode<T> | null)!;
   }
 
-  mostWins(node: TreeNode<T>): TreeNode<T> {
+  bestWinRatio(node: TreeNode<T>): TreeNode<T> {
     return node.children.reduce((bestChild, child) => {
-      const winRate = (child.wins) * child.visits;
-      return winRate > (bestChild ? (child.wins) : -Infinity) ? child : bestChild;
+      return (child.wins / child.visits)  > (bestChild ? (bestChild.wins / bestChild.visits) : -Infinity) ? child : bestChild;
     }, null as TreeNode<T> | null)!;
   }
 
