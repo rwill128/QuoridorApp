@@ -51,6 +51,9 @@ abstract class MCTS<T> {
     let currentNode: TreeNode<T> | null = node;
     while (currentNode !== null) {
       currentNode.update(result)
+      if (currentNode.parent) {
+        currentNode.parent.visits += 1
+      }
       if (currentNode.parent?.parent) {
         currentNode = currentNode.parent?.parent;
       } else {

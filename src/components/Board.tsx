@@ -103,7 +103,7 @@ const Board: React.FC = () => {
           initialState.board[playerTwoPiecePosition.col][playerTwoPiecePosition.row] = true
 
           const gameLogic = new GameLogic(initialState);
-          gameLogic.run(500); // Run MCTS for 1000 iterations
+          gameLogic.run(10); // Run MCTS for 1000 iterations
 
           const chosenMove = gameLogic.mostWins(gameLogic.root)
 
