@@ -84,7 +84,7 @@ const Board: React.FC = () => {
         };
 
         const gameLogic = new GameLogic(initialState);
-        gameLogic.run(2000, (bestMove) => {
+        gameLogic.run(200, (bestMove) => {
             setPlayerTwoPiecePosition({row: bestMove.state.playerTwoRow, col: bestMove.state.playerTwoCol});
             console.log(bestMove)
         });

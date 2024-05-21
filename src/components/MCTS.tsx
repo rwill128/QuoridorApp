@@ -17,7 +17,7 @@ abstract class MCTS<T> {
       this.backpropagation(expandedNode, result);
 
       // Call the progress callback every N iterations
-      if (progressCallback && i % 50 === 0) {
+      if (progressCallback && i % 10 === 0) {
         const bestMove = this.bestWinRatio(this.root);
         progressCallback(bestMove);
         await new Promise(requestAnimationFrame); // Yield control back to the main thread

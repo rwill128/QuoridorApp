@@ -11,12 +11,12 @@ export function wallBlocked(playerCol: number, playerRow: number, board: boolean
         }
     }
     if (direction === "left") {
-        if (board[playerCol-1][playerRow]) {
+        if (board[playerCol][playerRow]) {
             return true;
         }
     }
     if (direction === "right") {
-        if (board[playerCol][playerRow]) {
+        if (board[playerCol+1][playerRow]) {
             return true;
         }
     }
