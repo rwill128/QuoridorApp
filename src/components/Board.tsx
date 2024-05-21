@@ -49,18 +49,34 @@ const Board: React.FC = () => {
     setPlayerTwoTurn(false);
   }
 
+  function impassabilityGrid() {
+    let impassabilityGrid = [[false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false]];
+    // Update the board with wall positions
+    walls.forEach((wall) => {
+      if (wall.orientation === 'horizontal') {
+        impassabilityGrid[wall.col][wall.row] = true;
+        impassabilityGrid[wall.col + 1][wall.row] = true;
+      } else if (wall.orientation === 'vertical') {
+        impassabilityGrid[wall.col][wall.row] = true;
+        impassabilityGrid[wall.col][wall.row + 1] = true;
+      }
+    });
+    return impassabilityGrid;
+  }
+
   function performAIMove() {
+
     // Initialize the game logic with an initial state
     const initialState: GameState = {
-      board: [[false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false],
-        [false, false, false, false, false, false, false, false, false]],
+      board: impassabilityGrid(),
       playerTurn: 1,
       playerOneCol: playerOnePiecePosition.col,
       playerOneRow: playerOnePiecePosition.row,
@@ -68,20 +84,10 @@ const Board: React.FC = () => {
       playerTwoRow: playerTwoPiecePosition.row,
     };
 
-    // Update the board with wall positions
-    walls.forEach((wall) => {
-      if (wall.orientation === 'horizontal') {
-        initialState.board[wall.row][wall.col] = true;
-        initialState.board[wall.row][wall.col + 1] = true;
-      } else if (wall.orientation === 'vertical') {
-        initialState.board[wall.row][wall.col] = true;
-        initialState.board[wall.row + 1][wall.col] = true;
-      }
-    });
-
     const gameLogic = new GameLogic(initialState);
     gameLogic.run(2000, (bestMove) => {
       setPlayerTwoPiecePosition({ row: bestMove.state.playerTwoRow, col: bestMove.state.playerTwoCol });
+      console.log(bestMove)
     });
 
     const chosenMove = gameLogic.bestWinRatio(gameLogic.root)
@@ -90,8 +96,21 @@ const Board: React.FC = () => {
     setPlayerTwoSelected(false);
   }
 
+  function wallPlacingBlocked(row: number, col: number) : boolean {
+    let grid = impassabilityGrid();
+    if (wallOrientation == 'horizontal') {
+      if (grid[col][row] || grid[col + 1][row]) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   const handleCellPress = (row: number, col: number) => {
-    if (placingWall && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))) {
+    if (placingWall
+        && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))
+        && !wallPlacingBlocked(row, col)) {
       const chosenColor = playerOneTurn ? "red" : "orange";
       setWalls([...walls, { row, col, orientation: wallOrientation, color: chosenColor }]);
       setPlacingWall(false);
@@ -111,7 +130,6 @@ const Board: React.FC = () => {
             setTurnToBlack();
           }
           setPlayerOneSelected(false);
-          performAIMove();
         } else {
           if (
             playerOnePiecePosition.row === row &&
@@ -123,9 +141,6 @@ const Board: React.FC = () => {
       }
 
       if (playerTwoTurn) {
-        if (playerTwoIsAI) {
-          performAIMove();
-        } else {
           if (playerTwoSelected) {
             if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
               setPlayerTwoPiecePosition({ row, col });
@@ -139,7 +154,6 @@ const Board: React.FC = () => {
             ) {
               setPlayerTwoSelected(true);
             }
-          }
         }
       }
     }
@@ -175,6 +189,10 @@ const Board: React.FC = () => {
       <Button
         title="New Game"
         onPress={() => restartGame()}
+      />
+      <Button
+          title="AI Move"
+          onPress={() => performAIMove()}
       />
       <Text>{playerTurnMessage}</Text>
       <View style={styles.board}>

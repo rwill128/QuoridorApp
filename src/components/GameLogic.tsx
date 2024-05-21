@@ -19,7 +19,7 @@ class GameLogic extends MCTS<GameState> {
 
         function wallBlocked(playerCol: number, playerRow: number, board: boolean[][], direction: String) {
             if (direction === "down") {
-                if (board[playerCol] && board[playerRow + 1]) {
+                if (board[playerCol][playerRow + 1]) {
                     return true;
                 }
             }
