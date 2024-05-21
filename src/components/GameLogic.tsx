@@ -23,8 +23,9 @@ class GameLogic extends MCTS<GameState> {
 
         if (state.playerTurn === 0) {
             if (
-                state.playerOneRow <= 7 &&
-                !(state.playerOneCol == state.playerTwoCol && state.playerOneRow + 1 == state.playerTwoRow)
+                state.playerOneRow <= 7
+                // &&
+                // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow + 1 == state.playerTwoRow)
                 && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementVertical, "down")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -33,8 +34,9 @@ class GameLogic extends MCTS<GameState> {
                 possibleMoves.push(newState);
             }
             if (
-                state.playerOneRow >= 1 &&
-                !(state.playerOneCol == state.playerTwoCol && state.playerOneRow - 1 == state.playerTwoRow)
+                state.playerOneRow >= 1
+                // &&
+                // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow - 1 == state.playerTwoRow)
                 && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementVertical, "up")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -43,8 +45,9 @@ class GameLogic extends MCTS<GameState> {
                 possibleMoves.push(newState);
             }
             if (
-                state.playerOneCol <= 7 &&
-                !(state.playerOneCol + 1 == state.playerTwoCol && state.playerOneRow == state.playerTwoRow)
+                state.playerOneCol <= 7
+                //&&
+                // !(state.playerOneCol + 1 == state.playerTwoCol && state.playerOneRow == state.playerTwoRow)
                 && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementHorizontal, "right")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -53,8 +56,9 @@ class GameLogic extends MCTS<GameState> {
                 possibleMoves.push(newState);
             }
             if (
-                state.playerOneCol >= 1 &&
-                !(state.playerOneCol - 1 == state.playerTwoCol && state.playerOneRow == state.playerTwoRow)
+                state.playerOneCol >= 1
+                // &&
+                // !(state.playerOneCol - 1 == state.playerTwoCol && state.playerOneRow == state.playerTwoRow)
                 && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementHorizontal, "left")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -64,8 +68,9 @@ class GameLogic extends MCTS<GameState> {
             }
         } else if (state.playerTurn === 1) {
             if (
-                state.playerTwoRow >= 1 &&
-                !(state.playerOneCol == state.playerTwoCol && state.playerOneRow == state.playerTwoRow - 1)
+                state.playerTwoRow >= 1
+                // &&
+                // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow == state.playerTwoRow - 1)
                 && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementVertical, "up")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -74,8 +79,9 @@ class GameLogic extends MCTS<GameState> {
                 possibleMoves.push(newState);
             }
             if (
-                state.playerTwoRow <= 7 &&
-                !(state.playerOneCol == state.playerTwoCol && state.playerOneRow == state.playerTwoRow + 1)
+                state.playerTwoRow <= 7
+                // &&
+                // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow == state.playerTwoRow + 1)
                 && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementVertical, "down")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -84,8 +90,9 @@ class GameLogic extends MCTS<GameState> {
                 possibleMoves.push(newState);
             }
             if (
-                state.playerTwoCol <= 7 &&
-                !(state.playerOneCol == state.playerTwoCol + 1 && state.playerOneRow == state.playerTwoRow)
+                state.playerTwoCol <= 7
+                // &&
+                // !(state.playerOneCol == state.playerTwoCol + 1 && state.playerOneRow == state.playerTwoRow)
                 && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementHorizontal, "right")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -94,8 +101,9 @@ class GameLogic extends MCTS<GameState> {
                 possibleMoves.push(newState);
             }
             if (
-                state.playerTwoCol >= 1 &&
-                !(state.playerOneCol == state.playerTwoCol - 1 && state.playerOneRow == state.playerTwoRow)
+                state.playerTwoCol >= 1
+                // &&
+                // !(state.playerOneCol == state.playerTwoCol - 1 && state.playerOneRow == state.playerTwoRow)
                 && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementHorizontal, "left")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
