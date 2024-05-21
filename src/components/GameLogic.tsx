@@ -1,10 +1,13 @@
 import {MCTS} from './MCTS';
 import {wallBlocked} from "./WallBlocked.tsx";
 import {wallPlacingBlocked} from "./WallPlacingBlocked.tsx";
+import {impassabilityGridVerticalMovement} from "./ImpassabilityGridVerticalMovement.tsx";
+import {impassabilityGridHorizontalMovement} from "./ImpassabilityGridHorizontalMovement.tsx";
 
 type GameState = {
     boardMovementHorizontal: boolean[][];
     boardMovementVertical: boolean[][];
+    walls: { row: number; col: number; orientation: "horizontal" | "vertical", color: string }[];
     playerOneRow: number;
     playerOneCol: number;
     playerTwoRow: number;
@@ -21,9 +24,24 @@ class GameLogic extends MCTS<GameState> {
     getPossibleMoves(state: GameState): GameState[] {
         const possibleMoves: GameState[] = [];
 
-        for (var i = 0; i < 8; i++) {
-            for (var j = 0; j < 8; j++) {
-                if (!wallPlacingBlocked(i, j, ))
+        const wallColor = state.playerTurn === 1 ? "orange" : "red"
+        
+        for (var i = 1; i < 6; i++) {
+            for (var j = 1; j < 6; j++) {
+                if (!wallPlacingBlocked(j, i, "horizontal", state.walls)) {
+                    const newState = JSON.parse(JSON.stringify(state));
+                    newState.walls.push({row: j, col: i, orientation:"horizontal", color: wallColor});
+                    newState.boardMovementVertical = impassabilityGridVerticalMovement(newState.walls)
+                    newState.boardMovementHorizontal = impassabilityGridHorizontalMovement(newState.walls)
+                    possibleMoves.push(newState);
+                }
+                if (!wallPlacingBlocked(j, i, "vertical", state.walls)) {
+                    const newState = JSON.parse(JSON.stringify(state));
+                    newState.walls.push({row: j, col: i, orientation:"vertical", color: wallColor});
+                    newState.boardMovementVertical = impassabilityGridVerticalMovement(newState.walls)
+                    newState.boardMovementHorizontal = impassabilityGridHorizontalMovement(newState.walls)
+                    possibleMoves.push(newState);
+                }
             }
         }
 

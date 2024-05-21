@@ -55,6 +55,7 @@ const Board: React.FC = () => {
         const initialState: GameState = {
             boardMovementHorizontal: impassabilityGridHorizontalMovement(walls),
             boardMovementVertical: impassabilityGridVerticalMovement(walls),
+            walls: JSON.parse(JSON.stringify(walls)),
             playerTurn: 1,
             playerOneCol: playerOnePiecePosition.col,
             playerOneRow: playerOnePiecePosition.row,
@@ -63,17 +64,22 @@ const Board: React.FC = () => {
         };
 
         const gameLogic = new GameLogic(initialState);
-        gameLogic.run(200, (bestMove) => {
-            setPlayerTwoPiecePosition({row: bestMove.state.playerTwoRow, col: bestMove.state.playerTwoCol});
+        gameLogic.run(5000, (bestMove) => {
+            if (bestMove.state.walls.length !== walls.length) {
+                setWalls(bestMove.state.walls)
+            } else {
+                setPlayerTwoPiecePosition({row: bestMove.state.playerTwoRow, col: bestMove.state.playerTwoCol})
+            }
             console.log(bestMove)
+        }, (bestMove) => {
+            if (bestMove.state.walls.length !== walls.length) {
+                setWalls(bestMove.state.walls)
+            } else {
+                setPlayerTwoPiecePosition({row: bestMove.state.playerTwoRow, col: bestMove.state.playerTwoCol})
+            }
+            setTurnToBlue();
+            setPlayerTwoSelected(false);
         });
-
-        // gameLogic.run(2000)
-
-        const chosenMove = gameLogic.bestWinRatio(gameLogic.root)
-        setPlayerTwoPiecePosition({row: chosenMove.state.playerTwoRow, col: chosenMove.state.playerTwoCol})
-        setTurnToBlue();
-        setPlayerTwoSelected(false);
     }
 
 

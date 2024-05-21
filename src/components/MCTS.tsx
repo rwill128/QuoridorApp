@@ -9,7 +9,7 @@ abstract class MCTS<T> {
     this.uctK = uctK;
   }
 
-  async run(iterations: number, progressCallback?: (bestMove: TreeNode<T>) => void): Promise<void> {
+  async run(iterations: number, progressCallback?: (bestMove: TreeNode<T>) => void, completeCallback?: (bestMove: TreeNode<T>) => void): Promise<void> {
     for (let i = 0; i < iterations; i++) {
       const node = this.selection();
       const expandedNode = this.expansion(node);
@@ -22,6 +22,11 @@ abstract class MCTS<T> {
         progressCallback(bestMove);
         await new Promise(requestAnimationFrame); // Yield control back to the main thread
       }
+    }
+
+    if (completeCallback) {
+      const bestMove = this.bestWinRatio(this.root);
+      completeCallback(bestMove);
     }
   }
 
