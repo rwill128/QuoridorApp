@@ -25,6 +25,15 @@ abstract class MCTS<T> {
     }
   }
 
+  // run(iterations: number, progressCallback?: (bestMove: TreeNode<T>) => void): Promise<void> {
+  //   for (let i = 0; i < iterations; i++) {
+  //     const node = this.selection();
+  //     const expandedNode = this.expansion(node);
+  //     const result = this.simulation(expandedNode);
+  //     this.backpropagation(expandedNode, result);
+  //   }
+  // }
+
   selection(): TreeNode<T> {
     let node = this.root;
     while (node.isFullyExpanded && node.children.length > 0) {
@@ -76,7 +85,8 @@ abstract class MCTS<T> {
 
   bestWinRatio(node: TreeNode<T>): TreeNode<T> {
     return node.children.reduce((bestChild, child) => {
-      return (child.wins / child.visits)  > (bestChild ? (bestChild.wins / bestChild.visits) : -Infinity) ? child : bestChild;
+        let childWinRatio = child.visits > 0 ? child.wins / child.visits : 0;
+        return childWinRatio  > (bestChild ? (bestChild.wins / bestChild.visits) : -Infinity) ? child : bestChild;
     }, null as TreeNode<T> | null)!;
   }
 

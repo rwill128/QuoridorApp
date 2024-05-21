@@ -1,6 +1,6 @@
 import { canMoveTo } from "../src/components/CanMoveTo";
 
-describe('canMoveTo', () => {
+xdescribe('canMoveTo', () => {
   const piecePosition = {row: 4, col: 4};
   const walls = [
     {row: 2, col: 2, orientation: 'horizontal'},

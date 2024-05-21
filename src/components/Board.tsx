@@ -1,300 +1,305 @@
-import React, { useState } from "react";
-import {
-  Button,
-  StyleSheet,
-  Switch,
-  Text, TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
-} from "react-native";
+import React, {useState} from "react";
+import {Button, StyleSheet, Switch, Text, TouchableOpacity, TouchableWithoutFeedback, View} from "react-native";
 import Piece from "./Piece";
 import Wall from "./Wall";
-import { canMoveTo } from "./CanMoveTo";
-import { GameLogic, GameState } from "./GameLogic";
+import {canMoveTo} from "./CanMoveTo";
+import {GameLogic, GameState} from "./GameLogic";
+import {impassabilityGridVerticalMovement} from "./ImpassabilityGridVerticalMovement.tsx";
+import {impassabilityGridHorizontalMovement} from "./ImpassabilityGridHorizontalMovement.tsx";
+
 
 const Board: React.FC = () => {
-  const [playerOnePiecePosition, setPlayerOnePiecePosition] = useState({
-    row: 8,
-    col: 4
-  });
-  const [playerTwoPiecePosition, setPlayerTwoPiecePosition] = useState({
-    row: 0,
-    col: 4
-  });
-  const [playerOneSelected, setPlayerOneSelected] = useState(false);
-  const [playerTwoSelected, setPlayerTwoSelected] = useState(false);
-  const [playerOneTurn, setPlayerOneTurn] = useState(true);
-  const [playerTwoTurn, setPlayerTwoTurn] = useState(false);
-  const [playerTwoIsAI, setPlayerTwoIsAI] = useState(true);
-  const [walls, setWalls] = useState<
-    { row: number; col: number; orientation: "horizontal" | "vertical", color: string }[]
-  >([]);
-  const [placingWall, setPlacingWall] = useState(false);
-  const [wallOrientation, setWallOrientation] = useState<
-    "horizontal" | "vertical"
-  >("horizontal");
-  const [playerOneAvailableWalls, setPlayerOneAvailableWalls] = useState(10);
-  const [playerTwoAvailableWalls, setPlayerTwoAvailableWalls] = useState(10);
-  const [playerTurnMessage, setPlayerTurnMessage] = useState("Blue's Turn");
-
-  function setTurnToBlack() {
-    setPlayerTurnMessage("Black's Turn");
-    setPlayerOneTurn(false);
-    setPlayerTwoTurn(true);
-  }
-
-  function setTurnToBlue() {
-    setPlayerTurnMessage("Blue's Turn");
-    setPlayerOneTurn(true);
-    setPlayerTwoTurn(false);
-  }
-
-  function impassabilityGrid() {
-    let impassabilityGrid = [[false, false, false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false, false, false]];
-    // Update the board with wall positions
-    walls.forEach((wall) => {
-      if (wall.orientation === 'horizontal') {
-        impassabilityGrid[wall.col][wall.row] = true;
-        impassabilityGrid[wall.col + 1][wall.row] = true;
-      } else if (wall.orientation === 'vertical') {
-        impassabilityGrid[wall.col][wall.row] = true;
-        impassabilityGrid[wall.col][wall.row + 1] = true;
-      }
+    const [playerOnePiecePosition, setPlayerOnePiecePosition] = useState({
+        row: 8,
+        col: 4
     });
-    return impassabilityGrid;
-  }
+    const [playerTwoPiecePosition, setPlayerTwoPiecePosition] = useState({
+        row: 0,
+        col: 4
+    });
+    const [playerOneSelected, setPlayerOneSelected] = useState(false);
+    const [playerTwoSelected, setPlayerTwoSelected] = useState(false);
+    const [playerOneTurn, setPlayerOneTurn] = useState(true);
+    const [playerTwoTurn, setPlayerTwoTurn] = useState(false);
+    const [playerTwoIsAI, setPlayerTwoIsAI] = useState(true);
+    const [walls, setWalls] = useState<
+        { row: number; col: number; orientation: "horizontal" | "vertical", color: string }[]
+    >([]);
+    const [placingWall, setPlacingWall] = useState(false);
+    const [wallOrientation, setWallOrientation] = useState<
+        "horizontal" | "vertical"
+    >("horizontal");
+    const [playerOneAvailableWalls, setPlayerOneAvailableWalls] = useState(10);
+    const [playerTwoAvailableWalls, setPlayerTwoAvailableWalls] = useState(10);
+    const [playerTurnMessage, setPlayerTurnMessage] = useState("Blue's Turn");
 
-  function performAIMove() {
+    function setTurnToBlack() {
+        setPlayerTurnMessage("Black's Turn");
+        setPlayerOneTurn(false);
+        setPlayerTwoTurn(true);
+    }
 
-    // Initialize the game logic with an initial state
-    const initialState: GameState = {
-      board: impassabilityGrid(),
-      playerTurn: 1,
-      playerOneCol: playerOnePiecePosition.col,
-      playerOneRow: playerOnePiecePosition.row,
-      playerTwoCol: playerTwoPiecePosition.col,
-      playerTwoRow: playerTwoPiecePosition.row,
+    function setTurnToBlue() {
+        setPlayerTurnMessage("Blue's Turn");
+        setPlayerOneTurn(true);
+        setPlayerTwoTurn(false);
+    }
+
+    function wallPlacementGrid() {
+        let wallPlacementGridReturn = [[false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false],
+            [false, false, false, false, false, false, false, false, false]];
+        // Update the board with wall positions
+        walls.forEach((wall) => {
+            if (wall.orientation === 'horizontal') {
+                wallPlacementGridReturn[wall.col][wall.row] = true;
+                wallPlacementGridReturn[wall.col + 1][wall.row] = true;
+            } else if (wall.orientation === 'vertical') {
+                wallPlacementGridReturn[wall.col][wall.row] = true;
+                wallPlacementGridReturn[wall.col][wall.row + 1] = true;
+            }
+        });
+        return wallPlacementGridReturn;
+    }
+
+
+
+    function performAIMove() {
+
+        // Initialize the game logic with an initial state
+        const initialState: GameState = {
+            boardMovementHorizontal: impassabilityGridHorizontalMovement(walls),
+            boardMovementVertical: impassabilityGridVerticalMovement(walls),
+            playerTurn: 1,
+            playerOneCol: playerOnePiecePosition.col,
+            playerOneRow: playerOnePiecePosition.row,
+            playerTwoCol: playerTwoPiecePosition.col,
+            playerTwoRow: playerTwoPiecePosition.row,
+        };
+
+        const gameLogic = new GameLogic(initialState);
+        gameLogic.run(2000, (bestMove) => {
+            setPlayerTwoPiecePosition({row: bestMove.state.playerTwoRow, col: bestMove.state.playerTwoCol});
+            console.log(bestMove)
+        });
+
+        // gameLogic.run(2000)
+
+        const chosenMove = gameLogic.bestWinRatio(gameLogic.root)
+        setPlayerTwoPiecePosition({row: chosenMove.state.playerTwoRow, col: chosenMove.state.playerTwoCol})
+        setTurnToBlue();
+        setPlayerTwoSelected(false);
+    }
+
+    function wallPlacingBlocked(row: number, col: number): boolean {
+        let grid = wallPlacementGrid();
+        if (wallOrientation == 'horizontal') {
+            if (grid[col][row] || grid[col + 1][row]) {
+                return true;
+            }
+        }
+        if (wallOrientation == 'vertical') {
+            if (grid[col][row] || grid[col][row + 1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const handleCellPress = (row: number, col: number) => {
+        if (placingWall
+            && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))
+            && !wallPlacingBlocked(row, col)) {
+            const chosenColor = playerOneTurn ? "red" : "orange";
+            setWalls([...walls, {row, col, orientation: wallOrientation, color: chosenColor}]);
+            setPlacingWall(false);
+            if (playerOneTurn) {
+                setPlayerOneAvailableWalls(playerOneAvailableWalls - 1);
+                setTurnToBlack();
+            }
+            if (playerTwoTurn) {
+                setPlayerTwoAvailableWalls(playerTwoAvailableWalls - 1);
+                setTurnToBlue();
+            }
+        } else {
+            if (playerOneTurn) {
+                if (playerOneSelected) {
+                    if (canMoveTo(row, col, playerOnePiecePosition, playerTwoPiecePosition, walls)) {
+                        setPlayerOnePiecePosition({row, col});
+                        setTurnToBlack();
+                    }
+                    setPlayerOneSelected(false);
+                } else {
+                    if (
+                        playerOnePiecePosition.row === row &&
+                        playerOnePiecePosition.col === col
+                    ) {
+                        setPlayerOneSelected(true);
+                    }
+                }
+            }
+
+            if (playerTwoTurn) {
+                if (playerTwoSelected) {
+                    if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
+                        setPlayerTwoPiecePosition({row, col});
+                        setTurnToBlue();
+                    }
+                    setPlayerTwoSelected(false);
+                } else {
+                    if (
+                        playerTwoPiecePosition.row === row &&
+                        playerTwoPiecePosition.col === col
+                    ) {
+                        setPlayerTwoSelected(true);
+                    }
+                }
+            }
+        }
     };
 
-    const gameLogic = new GameLogic(initialState);
-    gameLogic.run(2000, (bestMove) => {
-      setPlayerTwoPiecePosition({ row: bestMove.state.playerTwoRow, col: bestMove.state.playerTwoCol });
-      console.log(bestMove)
-    });
-
-    const chosenMove = gameLogic.bestWinRatio(gameLogic.root)
-    setPlayerTwoPiecePosition({row: chosenMove.state.playerTwoRow, col: chosenMove.state.playerTwoCol})
-    setTurnToBlue();
-    setPlayerTwoSelected(false);
-  }
-
-  function wallPlacingBlocked(row: number, col: number) : boolean {
-    let grid = impassabilityGrid();
-    if (wallOrientation == 'horizontal') {
-      if (grid[col][row] || grid[col + 1][row]) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  const handleCellPress = (row: number, col: number) => {
-    if (placingWall
-        && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))
-        && !wallPlacingBlocked(row, col)) {
-      const chosenColor = playerOneTurn ? "red" : "orange";
-      setWalls([...walls, { row, col, orientation: wallOrientation, color: chosenColor }]);
-      setPlacingWall(false);
-      if (playerOneTurn) {
-        setPlayerOneAvailableWalls(playerOneAvailableWalls - 1);
-        setTurnToBlack();
-      }
-      if (playerTwoTurn) {
-        setPlayerTwoAvailableWalls(playerTwoAvailableWalls - 1);
-        setTurnToBlue();
-      }
-    } else {
-      if (playerOneTurn) {
-        if (playerOneSelected) {
-          if (canMoveTo(row, col, playerOnePiecePosition, playerTwoPiecePosition, walls)) {
-            setPlayerOnePiecePosition({ row, col });
-            setTurnToBlack();
-          }
-          setPlayerOneSelected(false);
-        } else {
-          if (
-            playerOnePiecePosition.row === row &&
-            playerOnePiecePosition.col === col
-          ) {
-            setPlayerOneSelected(true);
-          }
+    // Create a 9x9 grid
+    const grid = [];
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            grid.push(
+                <TouchableWithoutFeedback
+                    key={`${row}-${col}`}
+                    onPress={() => handleCellPress(row, col)}>
+                    <View style={styles.cell}/>
+                </TouchableWithoutFeedback>
+            );
         }
-      }
-
-      if (playerTwoTurn) {
-          if (playerTwoSelected) {
-            if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
-              setPlayerTwoPiecePosition({ row, col });
-              setTurnToBlue();
-            }
-            setPlayerTwoSelected(false);
-          } else {
-            if (
-              playerTwoPiecePosition.row === row &&
-              playerTwoPiecePosition.col === col
-            ) {
-              setPlayerTwoSelected(true);
-            }
-        }
-      }
     }
-  };
 
-  // Create a 9x9 grid
-  const grid = [];
-  for (let row = 0; row < 9; row++) {
-    for (let col = 0; col < 9; col++) {
-      grid.push(
-        <TouchableWithoutFeedback
-          key={`${row}-${col}`}
-          onPress={() => handleCellPress(row, col)}>
-          <View style={styles.cell} />
-        </TouchableWithoutFeedback>
-      );
+    function restartGame() {
+        setWalls([]);
+        setPlayerOneTurn(true);
+        setPlayerTwoTurn(false);
+        setPlayerTurnMessage("Blue's Turn");
+        setPlayerOnePiecePosition({row: 8, col: 4});
+        setPlayerTwoPiecePosition({row: 0, col: 4});
+        setPlayerOneAvailableWalls(10);
+        setPlayerTwoAvailableWalls(10);
     }
-  }
 
-  function restartGame() {
-    setWalls([]);
-    setPlayerOneTurn(true);
-    setPlayerTwoTurn(false);
-    setPlayerTurnMessage("Blue's Turn");
-    setPlayerOnePiecePosition({ row: 8, col: 4 });
-    setPlayerTwoPiecePosition({ row: 0, col: 4 });
-    setPlayerOneAvailableWalls(10);
-    setPlayerTwoAvailableWalls(10);
-  }
-
-  return (
-    <View style={styles.container}>
-      <Button
-        title="New Game"
-        onPress={() => restartGame()}
-      />
-      <Button
-          title="AI Move"
-          onPress={() => performAIMove()}
-      />
-      <Text>{playerTurnMessage}</Text>
-      <View style={styles.board}>
-        {grid}
-        <Piece
-          position={playerOnePiecePosition}
-          isSelected={playerOneSelected}
-          color={"blue"}
-          onPress={handleCellPress}
-        />
-        <Piece
-          position={playerTwoPiecePosition}
-          isSelected={playerTwoSelected}
-          color={"black"}
-          onPress={handleCellPress}
-        />
-        {walls.map((wall, index) => (
-          <Wall
-            key={index}
-            position={{ row: wall.row, col: wall.col }}
-            orientation={wall.orientation}
-            color={wall.color}
-          />
-        ))}
-      </View>
-      <View>
-        <Text>Black's available walls: {playerTwoAvailableWalls}</Text>
-        <Text>Blue's available walls: {playerOneAvailableWalls}</Text>
-      </View>
-      <View style={styles.controls}>
-        <Text>Orientation:</Text>
-        <View style={styles.switchContainer}>
-          <Text>Horizontal</Text>
-          <Switch
-            value={wallOrientation === "vertical"}
-            onValueChange={value =>
-              setWallOrientation(value ? "vertical" : "horizontal")
-            }
-            trackColor={{ false: "#ff8c00", true: "#ff8c00" }}
-            thumbColor={"#f4f3f4"}
-            disabled={playerOneAvailableWalls <= 0}
-          />
-          <Text>Vertical</Text>
+    return (
+        <View style={styles.container}>
+            <Button
+                title="New Game"
+                onPress={() => restartGame()}
+            />
+            <Button
+                title="AI Move"
+                onPress={() => performAIMove()}
+            />
+            <Text>{playerTurnMessage}</Text>
+            <View style={styles.board}>
+                {grid}
+                <Piece
+                    position={playerOnePiecePosition}
+                    isSelected={playerOneSelected}
+                    color={"blue"}
+                    onPress={handleCellPress}
+                />
+                <Piece
+                    position={playerTwoPiecePosition}
+                    isSelected={playerTwoSelected}
+                    color={"black"}
+                    onPress={handleCellPress}
+                />
+                {walls.map((wall, index) => (
+                    <Wall
+                        key={index}
+                        position={{row: wall.row, col: wall.col}}
+                        orientation={wall.orientation}
+                        color={wall.color}
+                    />
+                ))}
+            </View>
+            <View>
+                <Text>Black's available walls: {playerTwoAvailableWalls}</Text>
+                <Text>Blue's available walls: {playerOneAvailableWalls}</Text>
+            </View>
+            <View style={styles.controls}>
+                <Text>Orientation:</Text>
+                <View style={styles.switchContainer}>
+                    <Text>Horizontal</Text>
+                    <Switch
+                        value={wallOrientation === "vertical"}
+                        onValueChange={value =>
+                            setWallOrientation(value ? "vertical" : "horizontal")
+                        }
+                        trackColor={{false: "#ff8c00", true: "#ff8c00"}}
+                        thumbColor={"#f4f3f4"}
+                        disabled={playerOneAvailableWalls <= 0}
+                    />
+                    <Text>Vertical</Text>
+                </View>
+                <TouchableOpacity
+                    style={[
+                        styles.button,
+                        placingWall ? styles.buttonEmphasis : null
+                    ]}
+                    onPress={() => setPlacingWall(true)}
+                >
+                    <Text style={styles.buttonText}>Place Wall</Text>
+                </TouchableOpacity>
+            </View>
         </View>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            placingWall ? styles.buttonEmphasis : null
-          ]}
-          onPress={() => setPlacingWall(true)}
-        >
-          <Text style={styles.buttonText}>Place Wall</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: "center"
-  },
-  board: {
-    width: 360,
-    height: 360,
-    backgroundColor: "#eee",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    position: "relative"
-  },
-  cell: {
-    width: 40,
-    height: 40,
-    borderWidth: 1,
-    borderColor: "#ccc"
-  },
-  controls: {
-    marginTop: 20,
-    alignItems: "center"
-  },
-  switchContainer: {
-    flexDirection: "row",
-    alignItems: "center"
-  },
-  button: {
-    padding: 10,
-    marginVertical: 10,
-    borderRadius: 5,
-    backgroundColor: "#007BFF"
-  },
-  buttonEmphasis: {
-    borderWidth: 2,
-    borderColor: "yellow",
-    shadowColor: "#fff",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 10
-  },
-  buttonText: {
-    color: "#fff",
-    textAlign: "center"
-  }
+    container: {
+        alignItems: "center"
+    },
+    board: {
+        width: 360,
+        height: 360,
+        backgroundColor: "#eee",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        position: "relative"
+    },
+    cell: {
+        width: 40,
+        height: 40,
+        borderWidth: 1,
+        borderColor: "#ccc"
+    },
+    controls: {
+        marginTop: 20,
+        alignItems: "center"
+    },
+    switchContainer: {
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    button: {
+        padding: 10,
+        marginVertical: 10,
+        borderRadius: 5,
+        backgroundColor: "#007BFF"
+    },
+    buttonEmphasis: {
+        borderWidth: 2,
+        borderColor: "yellow",
+        shadowColor: "#fff",
+        shadowOffset: {width: 0, height: 0},
+        shadowOpacity: 1,
+        shadowRadius: 10
+    },
+    buttonText: {
+        color: "#fff",
+        textAlign: "center"
+    }
 });
 
 export default Board;
