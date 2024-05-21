@@ -6,6 +6,7 @@ import {canMoveTo} from "./CanMoveTo";
 import {GameLogic, GameState} from "./GameLogic";
 import {impassabilityGridVerticalMovement} from "./ImpassabilityGridVerticalMovement.tsx";
 import {impassabilityGridHorizontalMovement} from "./ImpassabilityGridHorizontalMovement.tsx";
+import {wallPlacingBlocked} from "./WallPlacingBlocked.tsx";
 
 
 const Board: React.FC = () => {
@@ -45,28 +46,6 @@ const Board: React.FC = () => {
         setPlayerTwoTurn(false);
     }
 
-    function wallPlacementGrid() {
-        let wallPlacementGridReturn = [[false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false],
-            [false, false, false, false, false, false, false, false, false]];
-        // Update the board with wall positions
-        walls.forEach((wall) => {
-            if (wall.orientation === 'horizontal') {
-                wallPlacementGridReturn[wall.col][wall.row] = true;
-                wallPlacementGridReturn[wall.col + 1][wall.row] = true;
-            } else if (wall.orientation === 'vertical') {
-                wallPlacementGridReturn[wall.col][wall.row] = true;
-                wallPlacementGridReturn[wall.col][wall.row + 1] = true;
-            }
-        });
-        return wallPlacementGridReturn;
-    }
 
 
 
@@ -97,25 +76,11 @@ const Board: React.FC = () => {
         setPlayerTwoSelected(false);
     }
 
-    function wallPlacingBlocked(row: number, col: number): boolean {
-        let grid = wallPlacementGrid();
-        if (wallOrientation == 'horizontal') {
-            if (grid[col][row] || grid[col + 1][row]) {
-                return true;
-            }
-        }
-        if (wallOrientation == 'vertical') {
-            if (grid[col][row] || grid[col][row + 1]) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     const handleCellPress = (row: number, col: number) => {
         if (placingWall
             && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))
-            && !wallPlacingBlocked(row, col)) {
+            && !wallPlacingBlocked(row, col, wallOrientation, walls)) {
             const chosenColor = playerOneTurn ? "red" : "orange";
             setWalls([...walls, {row, col, orientation: wallOrientation, color: chosenColor}]);
             setPlacingWall(false);

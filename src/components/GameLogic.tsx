@@ -1,5 +1,6 @@
 import {MCTS} from './MCTS';
 import {wallBlocked} from "./WallBlocked.tsx";
+import {wallPlacingBlocked} from "./WallPlacingBlocked.tsx";
 
 type GameState = {
     boardMovementHorizontal: boolean[][];
@@ -19,6 +20,12 @@ class GameLogic extends MCTS<GameState> {
 
     getPossibleMoves(state: GameState): GameState[] {
         const possibleMoves: GameState[] = [];
+
+        for (var i = 0; i < 8; i++) {
+            for (var j = 0; j < 8; j++) {
+                if (!wallPlacingBlocked(i, j, ))
+            }
+        }
 
 
         if (state.playerTurn === 0) {
