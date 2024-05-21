@@ -49,6 +49,47 @@ const Board: React.FC = () => {
     setPlayerTwoTurn(false);
   }
 
+  function performAIMove() {
+    // Initialize the game logic with an initial state
+    const initialState: GameState = {
+      board: [[false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false],
+        [false, false, false, false, false, false, false, false, false]],
+      playerTurn: 1,
+      playerOneCol: playerOnePiecePosition.col,
+      playerOneRow: playerOnePiecePosition.row,
+      playerTwoCol: playerTwoPiecePosition.col,
+      playerTwoRow: playerTwoPiecePosition.row,
+    };
+
+    // Update the board with wall positions
+    walls.forEach((wall) => {
+      if (wall.orientation === 'horizontal') {
+        initialState.board[wall.row][wall.col] = true;
+        initialState.board[wall.row][wall.col + 1] = true;
+      } else if (wall.orientation === 'vertical') {
+        initialState.board[wall.row][wall.col] = true;
+        initialState.board[wall.row + 1][wall.col] = true;
+      }
+    });
+
+    const gameLogic = new GameLogic(initialState);
+    gameLogic.run(2000, (bestMove) => {
+      setPlayerTwoPiecePosition({ row: bestMove.state.playerTwoRow, col: bestMove.state.playerTwoCol });
+    });
+
+    const chosenMove = gameLogic.bestWinRatio(gameLogic.root)
+    setPlayerTwoPiecePosition({row: chosenMove.state.playerTwoRow, col: chosenMove.state.playerTwoCol})
+    setTurnToBlue();
+    setPlayerTwoSelected(false);
+  }
+
   const handleCellPress = (row: number, col: number) => {
     if (placingWall && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))) {
       const chosenColor = playerOneTurn ? "red" : "orange";
@@ -70,6 +111,7 @@ const Board: React.FC = () => {
             setTurnToBlack();
           }
           setPlayerOneSelected(false);
+          performAIMove();
         } else {
           if (
             playerOnePiecePosition.row === row &&
@@ -82,36 +124,7 @@ const Board: React.FC = () => {
 
       if (playerTwoTurn) {
         if (playerTwoIsAI) {
-          // Initialize the game logic with an initial state
-          const initialState: GameState = {
-            board: [[false, false, false, false, false, false, false, false, false],
-              [false, false, false, false, false, false, false, false, false],
-              [false, false, false, false, false, false, false, false, false],
-              [false, false, false, false, false, false, false, false, false],
-              [false, false, false, false, false, false, false, false, false],
-              [false, false, false, false, false, false, false, false, false],
-              [false, false, false, false, false, false, false, false, false],
-              [false, false, false, false, false, false, false, false, false],
-              [false, false, false, false, false, false, false, false, false]],
-            playerTurn: 1,
-            playerOneCol: playerOnePiecePosition.col,
-            playerOneRow: playerOnePiecePosition.row,
-            playerTwoCol: playerTwoPiecePosition.col,
-            playerTwoRow: playerTwoPiecePosition.row,
-          };
-          initialState.board[playerOnePiecePosition.col][playerOnePiecePosition.row] = true
-          initialState.board[playerTwoPiecePosition.col][playerTwoPiecePosition.row] = true
-
-          const gameLogic = new GameLogic(initialState);
-          gameLogic.run(2000); // Run MCTS for 1000 iterations
-
-          const chosenMove = gameLogic.bestWinRatio(gameLogic.root)
-
-          console.log(chosenMove)
-
-          setPlayerTwoPiecePosition({ row: chosenMove.state.playerTwoRow, col: chosenMove.state.playerTwoCol} )
-          setTurnToBlue();
-          setPlayerTwoSelected(false);
+          performAIMove();
         } else {
           if (playerTwoSelected) {
             if (canMoveTo(row, col, playerTwoPiecePosition, playerOnePiecePosition, walls)) {
