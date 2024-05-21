@@ -17,7 +17,7 @@ export function impassabilityGridVerticalMovement(walls: {
     walls.forEach((wall) => {
         if (wall.orientation === 'horizontal') {
             wallPlacementGridReturn[wall.col][wall.row] = true;
-            wallPlacementGridReturn[wall.col][wall.row + 1] = true;
+            wallPlacementGridReturn[wall.col + 1][wall.row] = true;
         }
     });
     return wallPlacementGridReturn;

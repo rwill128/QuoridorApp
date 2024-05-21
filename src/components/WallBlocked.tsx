@@ -1,12 +1,12 @@
 export function wallBlocked(playerCol: number, playerRow: number, board: boolean[][], direction: String) {
 
     if (direction === "down") {
-        if (board[playerCol][playerRow]) {
+        if (board[playerCol][playerRow + 1]) {
             return true;
         }
     }
     if (direction === "up") {
-        if (board[playerCol][playerRow-1]) {
+        if (board[playerCol][playerRow]) {
             return true;
         }
     }
