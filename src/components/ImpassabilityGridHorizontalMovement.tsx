@@ -1,9 +1,4 @@
-export function impassabilityGridHorizontalMovement(walls: {
-    row: number;
-    col: number;
-    orientation: "horizontal" | "vertical",
-    color: string
-}[]) {
+export function impassabilityGridHorizontalMovement(walls: ({ row: number; col: number; orientation: "horizontal" | "vertical"; color: string } | { col: number; orientation: string; color: string; row: number })[]) {
     let wallPlacementGridReturn = [[false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false],
         [false, false, false, false, false, false, false, false, false],

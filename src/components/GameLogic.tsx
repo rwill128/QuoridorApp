@@ -1,6 +1,6 @@
 import {MCTS} from './MCTS';
 import {wallBlocked} from "./WallBlocked.tsx";
-import {wallPlacingBlocked} from "./WallPlacingBlocked.tsx";
+import { wallPlacementGrid, wallPlacingBlocked } from "./WallPlacingBlocked.tsx";
 import {impassabilityGridVerticalMovement} from "./ImpassabilityGridVerticalMovement.tsx";
 import {impassabilityGridHorizontalMovement} from "./ImpassabilityGridHorizontalMovement.tsx";
 
@@ -16,6 +16,26 @@ type GameState = {
 };
 
 
+function createNewGameStateWithAdditionalWall(state: GameState, j: number, i: number, wallColor: string, orientation: string = "horizontal") {
+    const newState = {
+        ...state,
+        walls: [...state.walls, { row: j, col: i, orientation: orientation, color: wallColor }],
+        boardMovementVertical: impassabilityGridVerticalMovement([...state.walls, {
+            row: j,
+            col: i,
+            orientation: orientation,
+            color: wallColor
+        }]),
+        boardMovementHorizontal: impassabilityGridHorizontalMovement([...state.walls, {
+            row: j,
+            col: i,
+            orientation: orientation,
+            color: wallColor
+        }])
+    };
+    return newState;
+}
+
 class GameLogic extends MCTS<GameState> {
     constructor(initialState: GameState, uctK: number = 1.41) {
         super(initialState, uctK);
@@ -25,22 +45,17 @@ class GameLogic extends MCTS<GameState> {
         const possibleMoves: GameState[] = [];
 
         const wallColor = state.playerTurn === 1 ? "orange" : "red"
-        
+
         for (var i = 1; i < 6; i++) {
             for (var j = 1; j < 6; j++) {
-                if (!wallPlacingBlocked(j, i, "horizontal", state.walls)) {
-                    const newState = JSON.parse(JSON.stringify(state));
-                    newState.walls.push({row: j, col: i, orientation:"horizontal", color: wallColor});
-                    newState.boardMovementVertical = impassabilityGridVerticalMovement(newState.walls)
-                    newState.boardMovementHorizontal = impassabilityGridHorizontalMovement(newState.walls)
-                    possibleMoves.push(newState);
+                const wallGrid = wallPlacementGrid(state.walls)
+                if (!wallPlacingBlocked(j, i, "horizontal", state.walls, wallGrid)) {
+                    const newState = createNewGameStateWithAdditionalWall(state, j, i, wallColor, "horizontal");
+                    possibleMoves.push(newState as GameState);
                 }
-                if (!wallPlacingBlocked(j, i, "vertical", state.walls)) {
-                    const newState = JSON.parse(JSON.stringify(state));
-                    newState.walls.push({row: j, col: i, orientation:"vertical", color: wallColor});
-                    newState.boardMovementVertical = impassabilityGridVerticalMovement(newState.walls)
-                    newState.boardMovementHorizontal = impassabilityGridHorizontalMovement(newState.walls)
-                    possibleMoves.push(newState);
+                if (!wallPlacingBlocked(j, i, "vertical", state.walls, wallGrid)) {
+                    const newState = createNewGameStateWithAdditionalWall(state, j, i, wallColor, "vertical");
+                    possibleMoves.push(newState as GameState);
                 }
             }
         }
@@ -53,9 +68,11 @@ class GameLogic extends MCTS<GameState> {
                 // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow + 1 == state.playerTwoRow)
                 && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementVertical, "down")
             ) {
-                const newState = JSON.parse(JSON.stringify(state));
-                newState.playerOneRow += 1;
-                newState.playerTurn = 1;
+                const newState = {
+                    ...state,
+                    playerOneRow: state.playerOneRow + 1,
+                    playerTurn: 1
+                };
                 possibleMoves.push(newState);
             }
             if (
@@ -64,9 +81,11 @@ class GameLogic extends MCTS<GameState> {
                 // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow - 1 == state.playerTwoRow)
                 && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementVertical, "up")
             ) {
-                const newState = JSON.parse(JSON.stringify(state));
-                newState.playerOneRow -= 1;
-                newState.playerTurn = 1;
+                const newState = {
+                    ...state,
+                    playerOneRow: state.playerOneRow - 1,
+                    playerTurn: 1
+                };
                 possibleMoves.push(newState);
             }
             if (
@@ -75,9 +94,11 @@ class GameLogic extends MCTS<GameState> {
                 // !(state.playerOneCol + 1 == state.playerTwoCol && state.playerOneRow == state.playerTwoRow)
                 && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementHorizontal, "right")
             ) {
-                const newState = JSON.parse(JSON.stringify(state));
-                newState.playerOneCol += 1;
-                newState.playerTurn = 1;
+                const newState = {
+                    ...state,
+                    playerOneCol: state.playerOneCol + 1,
+                    playerTurn: 1
+                };
                 possibleMoves.push(newState);
             }
             if (
@@ -86,9 +107,11 @@ class GameLogic extends MCTS<GameState> {
                 // !(state.playerOneCol - 1 == state.playerTwoCol && state.playerOneRow == state.playerTwoRow)
                 && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementHorizontal, "left")
             ) {
-                const newState = JSON.parse(JSON.stringify(state));
-                newState.playerOneCol -= 1;
-                newState.playerTurn = 1;
+                const newState = {
+                    ...state,
+                    playerOneCol: state.playerOneCol - 1,
+                    playerTurn: 1
+                };
                 possibleMoves.push(newState);
             }
         } else if (state.playerTurn === 1) {
@@ -98,9 +121,11 @@ class GameLogic extends MCTS<GameState> {
                 // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow == state.playerTwoRow - 1)
                 && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementVertical, "up")
             ) {
-                const newState = JSON.parse(JSON.stringify(state));
-                newState.playerTwoRow -= 1;
-                newState.playerTurn = 0;
+                const newState = {
+                    ...state,
+                    playerTwoRow: state.playerTwoRow - 1,
+                    playerTurn: 0
+                };
                 possibleMoves.push(newState);
             }
             if (
@@ -109,9 +134,11 @@ class GameLogic extends MCTS<GameState> {
                 // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow == state.playerTwoRow + 1)
                 && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementVertical, "down")
             ) {
-                const newState = JSON.parse(JSON.stringify(state));
-                newState.playerTwoRow += 1;
-                newState.playerTurn = 0;
+                const newState = {
+                    ...state,
+                    playerTwoRow: state.playerTwoRow + 1,
+                    playerTurn: 0
+                };
                 possibleMoves.push(newState);
             }
             if (
@@ -120,9 +147,11 @@ class GameLogic extends MCTS<GameState> {
                 // !(state.playerOneCol == state.playerTwoCol + 1 && state.playerOneRow == state.playerTwoRow)
                 && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementHorizontal, "right")
             ) {
-                const newState = JSON.parse(JSON.stringify(state));
-                newState.playerTwoCol += 1;
-                newState.playerTurn = 0;
+                const newState = {
+                    ...state,
+                    playerTwoCol: state.playerTwoCol + 1,
+                    playerTurn: 0
+                };
                 possibleMoves.push(newState);
             }
             if (
@@ -131,9 +160,11 @@ class GameLogic extends MCTS<GameState> {
                 // !(state.playerOneCol == state.playerTwoCol - 1 && state.playerOneRow == state.playerTwoRow)
                 && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementHorizontal, "left")
             ) {
-                const newState = JSON.parse(JSON.stringify(state));
-                newState.playerTwoCol -= 1;
-                newState.playerTurn = 0;
+                const newState = {
+                    ...state,
+                    playerTwoCol: state.playerTwoCol - 1,
+                    playerTurn: 0
+                };
                 possibleMoves.push(newState);
             }
         }

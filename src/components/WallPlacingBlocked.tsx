@@ -1,4 +1,4 @@
-function wallPlacementGrid(walls: {
+export function wallPlacementGrid(walls: {
     row: number;
     col: number;
     orientation: "horizontal" | "vertical",
@@ -31,8 +31,8 @@ export function wallPlacingBlocked(row: number, col: number, wallOrientation: st
     col: number;
     orientation: "horizontal" | "vertical",
     color: string
-}[]): boolean {
-    let grid = wallPlacementGrid(walls);
+}[], placementGrid: boolean[][]): boolean {
+    let grid = placementGrid;
     if (wallOrientation == 'horizontal') {
         if (grid[col][row] || grid[col + 1][row]) {
             return true;

@@ -1,9 +1,9 @@
 export const canMoveTo = (
   row: number,
   col: number,
-  piecePosition: {row: number; col: number},
-  opponentPiecePosition: {row: number; col: number},
-  walls: {row: number; col: number; orientation: String}[],
+  piecePosition: { row: number; col: number },
+  opponentPiecePosition: { row: number; col: number },
+  walls: { row: number; col: number; orientation: String }[]
 ) => {
   if (row === opponentPiecePosition.row && col === opponentPiecePosition.col) {
     return false;
@@ -15,7 +15,7 @@ export const canMoveTo = (
   ) {
     // Check for walls in the path
     for (let wall of walls) {
-      if (wall.orientation === 'horizontal') {
+      if (wall.orientation === "horizontal") {
         if (
           ((piecePosition.row === wall.row && row === wall.row - 1) ||
             (piecePosition.row === wall.row - 1 && row === wall.row)) &&
@@ -23,7 +23,7 @@ export const canMoveTo = (
         ) {
           return false;
         }
-      } else if (wall.orientation === 'vertical') {
+      } else if (wall.orientation === "vertical") {
         if (
           ((piecePosition.col === wall.col && col === wall.col - 1) ||
             (piecePosition.col === wall.col - 1 && col === wall.col)) &&

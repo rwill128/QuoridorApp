@@ -6,7 +6,7 @@ import {canMoveTo} from "./CanMoveTo";
 import {GameLogic, GameState} from "./GameLogic";
 import {impassabilityGridVerticalMovement} from "./ImpassabilityGridVerticalMovement.tsx";
 import {impassabilityGridHorizontalMovement} from "./ImpassabilityGridHorizontalMovement.tsx";
-import {wallPlacingBlocked} from "./WallPlacingBlocked.tsx";
+import { wallPlacementGrid, wallPlacingBlocked } from "./WallPlacingBlocked.tsx";
 
 
 const Board: React.FC = () => {
@@ -22,7 +22,6 @@ const Board: React.FC = () => {
     const [playerTwoSelected, setPlayerTwoSelected] = useState(false);
     const [playerOneTurn, setPlayerOneTurn] = useState(true);
     const [playerTwoTurn, setPlayerTwoTurn] = useState(false);
-    const [playerTwoIsAI, setPlayerTwoIsAI] = useState(true);
     const [walls, setWalls] = useState<
         { row: number; col: number; orientation: "horizontal" | "vertical", color: string }[]
     >([]);
@@ -55,6 +54,7 @@ const Board: React.FC = () => {
         const initialState: GameState = {
             boardMovementHorizontal: impassabilityGridHorizontalMovement(walls),
             boardMovementVertical: impassabilityGridVerticalMovement(walls),
+            wallPlacementGrid: wallPlacementGrid(walls),
             walls: JSON.parse(JSON.stringify(walls)),
             playerTurn: 1,
             playerOneCol: playerOnePiecePosition.col,
@@ -84,9 +84,10 @@ const Board: React.FC = () => {
 
 
     const handleCellPress = (row: number, col: number) => {
+        const wallGrid = wallPlacementGrid(walls)
         if (placingWall
             && ((playerOneTurn && playerOneAvailableWalls > 0) || (playerTwoTurn && playerTwoAvailableWalls > 0))
-            && !wallPlacingBlocked(row, col, wallOrientation, walls)) {
+            && !wallPlacingBlocked(row, col, wallOrientation, walls, wallGrid)) {
             const chosenColor = playerOneTurn ? "red" : "orange";
             setWalls([...walls, {row, col, orientation: wallOrientation, color: chosenColor}]);
             setPlacingWall(false);
