@@ -14,6 +14,16 @@ type GameState = {
     playerTurn: number;
 };
 
+type GridPoint = {
+    row: number;
+    col: number;
+};
+
+function gridPointKey(point: GridPoint): string {
+    return `${point.row},${point.col}`;
+}
+
+
 
 function createNewGameStateWithAdditionalWall(state: GameState, j: number, i: number, wallColor: string, orientation: string = "horizontal") {
     const newState = {
@@ -44,6 +54,59 @@ function createNewGameStateWithAdditionalWall(state: GameState, j: number, i: nu
 //     possibleMoves.push(newState);
 // }
 
+function createTreeOfMovementPossibilities(newState: {
+    playerTurn: number;
+    walls: ({ row: number; col: number; orientation: "horizontal" | "vertical"; color: string } | {
+        col: number;
+        orientation: string;
+        color: string;
+        row: number
+    })[];
+    boardMovementVertical: boolean[][];
+    players: { row: number; col: number }[];
+    boardMovementHorizontal: boolean[][]
+}, row: number, col: number) {
+
+    // This Map will hold the adjacency list
+    const gridMap: Map<string, string[]> = new Map();
+
+    for (let i = 0; i < row; i++) {
+        for (let j = 0; j < col; j++) {
+
+            if (!gridMap.has(gridPointKey({"row": i, "col": j}))) {
+                gridMap.set(gridPointKey({"row": i, "col": j}), []);
+            }
+
+            // For every point in the grid, see which directions are possible.
+
+            // Check right:
+            if (!wallBlocked(i, j, newState.boardMovementHorizontal, "right")) {
+                // @ts-ignore
+                gridMap.get(gridPointKey({"row": i, "col": j})).push(gridPointKey({"row": i, "col": j + 1} ))
+            }
+
+
+            // Check left:
+            if (!wallBlocked(i, j, newState.boardMovementHorizontal, "left")) {
+                // @ts-ignore
+                gridMap.get(gridPointKey({"row": i, "col": j})).push(gridPointKey({"row": i, "col": j - 1} ))
+            }
+
+        }
+    }
+
+
+    return gridMap
+}
+
+function bothPlayersHavePath(state: GameState, i: number, j: number, orientation: string) {
+    // First, create a new state to add a wall too
+    const newState = createNewGameStateWithAdditionalWall(state, j, i, "doesn't matter", orientation);
+
+    createTreeOfMovementPossibilities(newState, newState.players[0].row, newState.players[0].col);
+
+}
+
 class GameLogic extends MCTS<GameState> {
     constructor(initialState: GameState, uctK: number = 1.41) {
         super(initialState, uctK);
@@ -72,8 +135,6 @@ class GameLogic extends MCTS<GameState> {
         if (state.playerTurn === 0) {
             if (
                 state.players[0].row <= 7
-                // &&
-                // !(state.players[0].col == state.players[1].col && state.players[0].row + 1 == state.players[1].row)
                 && !wallBlocked(state.players[0].col, state.players[0].row, state.boardMovementVertical, "down")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -83,8 +144,6 @@ class GameLogic extends MCTS<GameState> {
             }
             if (
                 state.players[0].row >= 1
-                // &&
-                // !(state.players[0].col == state.players[1].col && state.players[0].row - 1 == state.players[1].row)
                 && !wallBlocked(state.players[0].col, state.players[0].row, state.boardMovementVertical, "up")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -94,8 +153,6 @@ class GameLogic extends MCTS<GameState> {
             }
             if (
                 state.players[0].col <= 7
-                //&&
-                // !(state.players[0].col + 1 == state.players[1].col && state.players[0].row == state.players[1].row)
                 && !wallBlocked(state.players[0].col, state.players[0].row, state.boardMovementHorizontal, "right")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -105,8 +162,6 @@ class GameLogic extends MCTS<GameState> {
             }
             if (
                 state.players[0].col >= 1
-                // &&
-                // !(state.players[0].col - 1 == state.players[1].col && state.players[0].row == state.players[1].row)
                 && !wallBlocked(state.players[0].col, state.players[0].row, state.boardMovementHorizontal, "left")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -117,8 +172,6 @@ class GameLogic extends MCTS<GameState> {
         } else if (state.playerTurn === 1) {
             if (
                 state.players[1].row >= 1
-                // &&
-                // !(state.players[0].col == state.players[1].col && state.players[0].row == state.players[1].row - 1)
                 && !wallBlocked(state.players[1].col, state.players[1].row, state.boardMovementVertical, "up")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -128,8 +181,6 @@ class GameLogic extends MCTS<GameState> {
             }
             if (
                 state.players[1].row <= 7
-                // &&
-                // !(state.players[0].col == state.players[1].col && state.players[0].row == state.players[1].row + 1)
                 && !wallBlocked(state.players[1].col, state.players[1].row, state.boardMovementVertical, "down")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -139,8 +190,6 @@ class GameLogic extends MCTS<GameState> {
             }
             if (
                 state.players[1].col <= 7
-                // &&
-                // !(state.players[0].col == state.players[1].col + 1 && state.players[0].row == state.players[1].row)
                 && !wallBlocked(state.players[1].col, state.players[1].row, state.boardMovementHorizontal, "right")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));
@@ -150,8 +199,6 @@ class GameLogic extends MCTS<GameState> {
             }
             if (
                 state.players[1].col >= 1
-                // &&
-                // !(state.players[0].col == state.players[1].col - 1 && state.players[0].row == state.players[1].row)
                 && !wallBlocked(state.players[1].col, state.players[1].row, state.boardMovementHorizontal, "left")
             ) {
                 const newState = JSON.parse(JSON.stringify(state));

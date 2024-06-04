@@ -71,18 +71,12 @@ const Board: React.FC = () => {
 
         const gameLogic = new GameLogic(initialState);
         gameLogic.run(5000, (bestMove) => {
-            if (bestMove.state.walls.length !== walls.length) {
-                setWalls(bestMove.state.walls)
-            } else {
-                setPlayerTwoPiecePosition({row: bestMove.state.players[1].row, col: bestMove.state.players[1].col})
-            }
+            setWalls(bestMove.state.walls)
+            setPlayerTwoPiecePosition({row: bestMove.state.players[1].row, col: bestMove.state.players[1].col})
             console.log(bestMove)
         }, (bestMove) => {
-            if (bestMove.state.walls.length !== walls.length) {
-                setWalls(bestMove.state.walls)
-            } else {
-                setPlayerTwoPiecePosition({row: bestMove.state.players[1].row, col: bestMove.state.players[1].col})
-            }
+            setWalls(bestMove.state.walls)
+            setPlayerTwoPiecePosition({row: bestMove.state.players[1].row, col: bestMove.state.players[1].col})
             setTurnToBlue();
             setPlayerTwoSelected(false);
         });
