@@ -58,6 +58,12 @@ abstract class MCTS<T> {
     return node;
   }
 
+  // ^^    const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+  //     if (!node.children.some(child => this.statesEqual(child.state, randomMove))) {
+  //       return node.addChild(randomMove);
+  //     }
+
+
   simulation(node: TreeNode<T>): number {
     let currentState = node.state;
     while (!this.isTerminal(currentState)) {

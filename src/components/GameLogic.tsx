@@ -8,10 +8,9 @@ type GameState = {
     boardMovementHorizontal: boolean[][];
     boardMovementVertical: boolean[][];
     walls: { row: number; col: number; orientation: "horizontal" | "vertical", color: string }[];
-    playerOneRow: number;
-    playerOneCol: number;
-    playerTwoRow: number;
-    playerTwoCol: number;
+    players: {
+        row: number; col: number;
+    }[];
     playerTurn: number;
 };
 
@@ -35,6 +34,15 @@ function createNewGameStateWithAdditionalWall(state: GameState, j: number, i: nu
     };
     return newState;
 }
+
+// function moveTo(state: GameState, possibleMoves: GameState[], player, direction: string) {
+//
+//     const newState = {
+//         ...state,
+//         playerTurn: 1
+//     };
+//     possibleMoves.push(newState);
+// }
 
 class GameLogic extends MCTS<GameState> {
     constructor(initialState: GameState, uctK: number = 1.41) {
@@ -63,108 +71,92 @@ class GameLogic extends MCTS<GameState> {
 
         if (state.playerTurn === 0) {
             if (
-                state.playerOneRow <= 7
+                state.players[0].row <= 7
                 // &&
-                // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow + 1 == state.playerTwoRow)
-                && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementVertical, "down")
+                // !(state.players[0].col == state.players[1].col && state.players[0].row + 1 == state.players[1].row)
+                && !wallBlocked(state.players[0].col, state.players[0].row, state.boardMovementVertical, "down")
             ) {
-                const newState = {
-                    ...state,
-                    playerOneRow: state.playerOneRow + 1,
-                    playerTurn: 1
-                };
+                const newState = JSON.parse(JSON.stringify(state));
+                newState.playerTurn = 1;
+                newState.players[0].row = newState.players[0].row + 1;
                 possibleMoves.push(newState);
             }
             if (
-                state.playerOneRow >= 1
+                state.players[0].row >= 1
                 // &&
-                // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow - 1 == state.playerTwoRow)
-                && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementVertical, "up")
+                // !(state.players[0].col == state.players[1].col && state.players[0].row - 1 == state.players[1].row)
+                && !wallBlocked(state.players[0].col, state.players[0].row, state.boardMovementVertical, "up")
             ) {
-                const newState = {
-                    ...state,
-                    playerOneRow: state.playerOneRow - 1,
-                    playerTurn: 1
-                };
+                const newState = JSON.parse(JSON.stringify(state));
+                newState.playerTurn = 1;
+                newState.players[0].row = state.players[0].row - 1
                 possibleMoves.push(newState);
             }
             if (
-                state.playerOneCol <= 7
+                state.players[0].col <= 7
                 //&&
-                // !(state.playerOneCol + 1 == state.playerTwoCol && state.playerOneRow == state.playerTwoRow)
-                && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementHorizontal, "right")
+                // !(state.players[0].col + 1 == state.players[1].col && state.players[0].row == state.players[1].row)
+                && !wallBlocked(state.players[0].col, state.players[0].row, state.boardMovementHorizontal, "right")
             ) {
-                const newState = {
-                    ...state,
-                    playerOneCol: state.playerOneCol + 1,
-                    playerTurn: 1
-                };
+                const newState = JSON.parse(JSON.stringify(state));
+                newState.playerTurn = 1;
+                newState.players[0].col = state.players[0].col + 1
                 possibleMoves.push(newState);
             }
             if (
-                state.playerOneCol >= 1
+                state.players[0].col >= 1
                 // &&
-                // !(state.playerOneCol - 1 == state.playerTwoCol && state.playerOneRow == state.playerTwoRow)
-                && !wallBlocked(state.playerOneCol, state.playerOneRow, state.boardMovementHorizontal, "left")
+                // !(state.players[0].col - 1 == state.players[1].col && state.players[0].row == state.players[1].row)
+                && !wallBlocked(state.players[0].col, state.players[0].row, state.boardMovementHorizontal, "left")
             ) {
-                const newState = {
-                    ...state,
-                    playerOneCol: state.playerOneCol - 1,
-                    playerTurn: 1
-                };
+                const newState = JSON.parse(JSON.stringify(state));
+                newState.playerTurn = 1;
+                newState.players[0].col = state.players[0].col - 1
                 possibleMoves.push(newState);
             }
         } else if (state.playerTurn === 1) {
             if (
-                state.playerTwoRow >= 1
+                state.players[1].row >= 1
                 // &&
-                // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow == state.playerTwoRow - 1)
-                && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementVertical, "up")
+                // !(state.players[0].col == state.players[1].col && state.players[0].row == state.players[1].row - 1)
+                && !wallBlocked(state.players[1].col, state.players[1].row, state.boardMovementVertical, "up")
             ) {
-                const newState = {
-                    ...state,
-                    playerTwoRow: state.playerTwoRow - 1,
-                    playerTurn: 0
-                };
+                const newState = JSON.parse(JSON.stringify(state));
+                newState.playerTurn = 0;
+                newState.players[1].row = state.players[1].row - 1
                 possibleMoves.push(newState);
             }
             if (
-                state.playerTwoRow <= 7
+                state.players[1].row <= 7
                 // &&
-                // !(state.playerOneCol == state.playerTwoCol && state.playerOneRow == state.playerTwoRow + 1)
-                && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementVertical, "down")
+                // !(state.players[0].col == state.players[1].col && state.players[0].row == state.players[1].row + 1)
+                && !wallBlocked(state.players[1].col, state.players[1].row, state.boardMovementVertical, "down")
             ) {
-                const newState = {
-                    ...state,
-                    playerTwoRow: state.playerTwoRow + 1,
-                    playerTurn: 0
-                };
+                const newState = JSON.parse(JSON.stringify(state));
+                newState.playerTurn = 0;
+                newState.players[1].row = state.players[1].row + 1
                 possibleMoves.push(newState);
             }
             if (
-                state.playerTwoCol <= 7
+                state.players[1].col <= 7
                 // &&
-                // !(state.playerOneCol == state.playerTwoCol + 1 && state.playerOneRow == state.playerTwoRow)
-                && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementHorizontal, "right")
+                // !(state.players[0].col == state.players[1].col + 1 && state.players[0].row == state.players[1].row)
+                && !wallBlocked(state.players[1].col, state.players[1].row, state.boardMovementHorizontal, "right")
             ) {
-                const newState = {
-                    ...state,
-                    playerTwoCol: state.playerTwoCol + 1,
-                    playerTurn: 0
-                };
+                const newState = JSON.parse(JSON.stringify(state));
+                newState.playerTurn = 0;
+                newState.players[1].col = state.players[1].col + 1
                 possibleMoves.push(newState);
             }
             if (
-                state.playerTwoCol >= 1
+                state.players[1].col >= 1
                 // &&
-                // !(state.playerOneCol == state.playerTwoCol - 1 && state.playerOneRow == state.playerTwoRow)
-                && !wallBlocked(state.playerTwoCol, state.playerTwoRow, state.boardMovementHorizontal, "left")
+                // !(state.players[0].col == state.players[1].col - 1 && state.players[0].row == state.players[1].row)
+                && !wallBlocked(state.players[1].col, state.players[1].row, state.boardMovementHorizontal, "left")
             ) {
-                const newState = {
-                    ...state,
-                    playerTwoCol: state.playerTwoCol - 1,
-                    playerTurn: 0
-                };
+                const newState = JSON.parse(JSON.stringify(state));
+                newState.playerTurn = 0;
+                newState.players[1].col = state.players[1].col - 1
                 possibleMoves.push(newState);
             }
         }
@@ -181,10 +173,10 @@ class GameLogic extends MCTS<GameState> {
     }
 
     isTerminal(state: GameState): boolean {
-        if (state.playerTwoRow >= 8) {
+        if (state.players[1].row >= 8) {
             return true;
         }
-        if (state.playerOneRow <= 0) {
+        if (state.players[0].row <= 0) {
             return true;
         }
         return false;
@@ -192,15 +184,15 @@ class GameLogic extends MCTS<GameState> {
 
     getResult(state: GameState, depth: number): number {
         if (depth % 2 === 1) {
-            if (state.playerTwoRow >= 8) {
+            if (state.players[1].row >= 8) {
                 return 1;
-            } else if (state.playerOneRow <= 0) {
+            } else if (state.players[0].row <= 0) {
                 return 0;
             }
         } else {
-            if (state.playerTwoRow >= 8) {
+            if (state.players[1].row >= 8) {
                 return 0;
-            } else if (state.playerOneRow <= 0) {
+            } else if (state.players[0].row <= 0) {
                 return 1;
             }
         }
